@@ -3,440 +3,895 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Trading Assistant IA</title>
+<title>Trading Pro IA</title>
 <link rel="manifest" href="/manifest.json"/>
 <meta name="theme-color" content="#080c14"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#080c14;--bg2:#0d1422;--bg3:#111d30;--border:#1a2840;--accent:#00e5a0;--blue:#0057ff;--red:#ff3d5a;--yellow:#f5c400;--text:#dde6f0;--text2:#5a7a9a;}
+:root{
+  --bg:#080c14;--bg2:#0d1422;--bg3:#111d30;--border:#1a2840;
+  --accent:#00e5a0;--blue:#0057ff;--red:#ff3d5a;--yellow:#f5c400;
+  --text:#dde6f0;--text2:#5a7a9a;--purple:#7c3aed;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;}
-#app{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:0 auto;}
-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 8px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:960px;margin:0 auto;}
+
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .logo{display:flex;align-items:center;gap:10px;}
 .lhex{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:14px;animation:hp 3s ease-in-out infinite;}
 @keyframes hp{0%,100%{filter:brightness(1);}50%{filter:brightness(1.4) drop-shadow(0 0 8px var(--accent));}}
 .ltxt{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.05em;line-height:1.1;}
-.lsub{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.12em;}
-.spill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--text2);transition:all .3s;}
-.sdot.live{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:blink 1.2s ease-in-out infinite;}
-.sdot.scan{background:var(--yellow);box-shadow:0 0 8px var(--yellow);}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.lsub{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.1em;}
+.hright{display:flex;align-items:center;gap:8px;}
+.session-pill{font-family:'Space Mono',monospace;font-size:9px;padding:4px 10px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);}
+.session-pill.london{border-color:#3b82f6;color:#3b82f6;background:rgba(59,130,246,.1);}
+.session-pill.ny{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.1);}
+.session-pill.tokyo{border-color:var(--yellow);color:var(--yellow);background:rgba(245,196,0,.1);}
+.session-pill.overlap{border-color:var(--purple);color:#a78bfa;background:rgba(124,58,237,.1);animation:blink 1s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.5;}}
+#clock{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);}
 
-/* SINAL DESTAQUE */
-#sbar{display:none;flex-shrink:0;padding:10px 14px;background:var(--bg2);border-bottom:2px solid var(--border);}
-#sbar.show{display:block;}
-.scard{border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;border:2px solid transparent;transition:all .4s;}
-.scard.buy{background:linear-gradient(135deg,rgba(0,229,160,.15),rgba(0,229,160,.04));border-color:var(--accent);}
-.scard.sell{background:linear-gradient(135deg,rgba(255,61,90,.15),rgba(255,61,90,.04));border-color:var(--red);}
-.scard.neutral{background:linear-gradient(135deg,rgba(245,196,0,.1),rgba(245,196,0,.03));border-color:var(--yellow);}
-.sico{font-size:40px;flex-shrink:0;line-height:1;}
-.sinf{flex:1;}
-.sact{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.06em;line-height:1;margin-bottom:4px;}
+/* SINAL PRINCIPAL */
+#sbar{flex-shrink:0;padding:10px 14px;background:var(--bg2);border-bottom:2px solid var(--border);}
+.scard{border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;border:2px solid var(--border);transition:all .4s;background:var(--bg3);}
+.scard.buy{background:linear-gradient(135deg,rgba(0,229,160,.12),rgba(0,229,160,.03));border-color:var(--accent);}
+.scard.sell{background:linear-gradient(135deg,rgba(255,61,90,.12),rgba(255,61,90,.03));border-color:var(--red);}
+.scard.neutral{background:linear-gradient(135deg,rgba(245,196,0,.08),rgba(245,196,0,.02));border-color:var(--yellow);}
+.sico{font-size:36px;flex-shrink:0;line-height:1;}
+.sinf{flex:1;min-width:0;}
+.sact{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.06em;line-height:1;margin-bottom:3px;}
 .scard.buy .sact{color:var(--accent);}
 .scard.sell .sact{color:var(--red);}
 .scard.neutral .sact{color:var(--yellow);}
-.sreason{font-size:12px;color:var(--text2);line-height:1.4;}
-.stime{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);text-align:right;flex-shrink:0;}
-
-/* TELA */
-#scr{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
-#wrap{position:relative;width:100%;height:150px;background:#050810;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-#vid{width:100%;height:100%;object-fit:contain;display:none;}
-#cnv{display:none;}
-.ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text2);}
-.ph .ic{font-size:28px;}
-.ph p{font-family:'Space Mono',monospace;font-size:10px;text-align:center;letter-spacing:.08em;line-height:1.6;}
-.aov{position:absolute;inset:0;background:rgba(8,12,20,.78);display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;backdrop-filter:blur(2px);}
-.aov.on{display:flex;}
-.scanl{width:80%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 1.5s ease-in-out infinite;}
-@keyframes scan{0%{transform:translateY(-40px);opacity:0;}50%{opacity:1;}100%{transform:translateY(40px);opacity:0;}}
-.aov span{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.15em;}
-#tbadge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:1px solid var(--accent);border-radius:6px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);display:none;}
+.sreason{font-size:11px;color:var(--text2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.smeta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap;}
+.stag{font-family:'Space Mono',monospace;font-size:9px;padding:2px 8px;border-radius:8px;background:var(--bg);border:1px solid var(--border);}
+.stag.entry{border-color:#3b82f6;color:#3b82f6;}
+.stag.stop{border-color:var(--red);color:var(--red);}
+.stag.target{border-color:var(--accent);color:var(--accent);}
+.stag.rr{border-color:var(--purple);color:#a78bfa;}
+.sright{text-align:right;flex-shrink:0;}
+.stime{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);}
+.sconf{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;margin-top:2px;}
+.sconf.alta{color:var(--accent);}
+.sconf.media{color:var(--yellow);}
+.sconf.baixa{color:var(--red);}
 
 /* CONTROLES */
-#ctrl{display:flex;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
-.btn{flex:1;border:none;border-radius:10px;padding:10px 8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+#ctrl{display:flex;gap:6px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.cgroup{display:flex;gap:6px;align-items:center;}
+.clabel{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.08em;}
+select{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;cursor:pointer;}
+select:focus{border-color:var(--accent);}
+.btn{border:none;border-radius:10px;padding:8px 14px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;}
 .btn:active{transform:scale(.95);}
-.bp{background:linear-gradient(135deg,var(--blue),#0088ff);color:white;}
-.bl{background:linear-gradient(135deg,#00b377,var(--accent));color:#080c14;}
-.bl.on{background:linear-gradient(135deg,var(--red),#cc1133);color:white;}
-.bs{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
-.btn:disabled{opacity:.4;pointer-events:none;}
+.btn-analyze{background:linear-gradient(135deg,var(--blue),#0088ff);color:white;flex:1;}
+.btn-auto{background:linear-gradient(135deg,#00b377,var(--accent));color:#080c14;}
+.btn-auto.on{background:linear-gradient(135deg,var(--red),#cc1133);color:white;}
+.btn-sm{background:var(--bg3);color:var(--text);border:1px solid var(--border);padding:6px 10px;}
 
-/* INTERVALO */
-#ibar{display:none;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
-#ibar.on{display:flex;}
-#ibar span{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);flex-shrink:0;}
-.iopt{padding:5px 12px;border-radius:16px;border:1px solid var(--border);background:var(--bg3);font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:all .2s;}
-.iopt.on{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+/* TABS */
+#tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{flex:1;padding:8px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;text-align:center;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
 
-/* TIMEFRAME */
-#tfbar{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
-#tfbar span{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);flex-shrink:0;letter-spacing:.08em;}
-.tfopt{padding:5px 13px;border-radius:16px;border:1px solid var(--border);background:var(--bg3);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;}
-.tfopt:hover{border-color:var(--blue);color:var(--text);}
-.tfopt.on{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 0 10px rgba(0,87,255,.4);}
-.tf-info{font-family:'Space Mono',monospace;font-size:9px;background:rgba(0,87,255,.12);border:1px solid rgba(0,87,255,.25);border-radius:8px;padding:3px 10px;color:#6699ff;margin-left:auto;flex-shrink:0;}
+/* PANELS */
+#panels{flex:1;overflow:hidden;position:relative;}
+.panel{position:absolute;inset:0;overflow-y:auto;padding:14px;display:none;flex-direction:column;gap:10px;}
+.panel.on{display:flex;}
+.panel::-webkit-scrollbar{width:3px;}
+.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ATIVO */
-#abar{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
-#abar span{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);flex-shrink:0;letter-spacing:.08em;}
-#ativo-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:6px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;outline:none;text-transform:uppercase;letter-spacing:.1em;transition:border-color .2s;max-width:140px;}
-#ativo-input:focus{border-color:var(--accent);}
-#ativo-input::placeholder{color:var(--text2);font-weight:400;text-transform:none;}
-.ativo-presets{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;}
-.ativo-presets::-webkit-scrollbar{display:none;}
-.apre{flex-shrink:0;padding:5px 11px;border-radius:14px;border:1px solid var(--border);background:var(--bg3);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;letter-spacing:.05em;}
-.apre:hover,.apre:active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
-.apre.on{background:rgba(0,229,160,.15);border-color:var(--accent);color:var(--accent);}
-#reset-btn{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:5px 10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;}
-#reset-btn:hover{border-color:var(--red);color:var(--red);}
+/* ANÁLISE PANEL */
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.acard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;}
+.acard-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.1em;margin-bottom:8px;}
+.acard-val{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);}
+.acard-val.up{color:var(--accent);}
+.acard-val.down{color:var(--red);}
+.acard-val.neutral{color:var(--yellow);}
+.tf-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.tf-row:last-child{border-bottom:none;}
+.tf-name{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);}
+.tf-signal{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
+.tf-signal.buy{color:var(--accent);}
+.tf-signal.sell{color:var(--red);}
+.tf-signal.neutral{color:var(--yellow);}
 
-/* CONTADOR VISUAL no signal card */
-.scount{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);margin-top:4px;}
-.scount .bar{display:flex;gap:3px;margin-top:4px;}
-.scount .dot{width:10px;height:10px;border-radius:50%;background:var(--border);}
-.scount .dot.buy{background:var(--accent);box-shadow:0 0 6px var(--accent);}
-.scount .dot.sell{background:var(--red);box-shadow:0 0 6px var(--red);}
-.scount .dot.neutral{background:var(--yellow);}
-
-/* QUICK */
-#qa{display:flex;gap:6px;padding:6px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border);}
-#qa::-webkit-scrollbar{display:none;}
-.qb{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;}
-.qb:hover,.qb:active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
-
-/* CHAT — GRANDE */
-#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
-#chat::-webkit-scrollbar{width:4px;}
-#chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-.msg{max-width:85%;animation:mi .3s cubic-bezier(.34,1.56,.64,1);}
+/* CHAT PANEL */
+.msg{max-width:88%;animation:mi .3s cubic-bezier(.34,1.56,.64,1);}
 @keyframes mi{from{opacity:0;transform:translateY(10px) scale(.95);}to{opacity:1;transform:none;}}
-.mu{align-self:flex-end;}.ma{align-self:flex-start;max-width:92%;}.ms{align-self:center;max-width:100%;}
-.mb{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.75;}
-.mu .mb{background:linear-gradient(135deg,var(--blue),#0077ee);color:white;border-bottom-right-radius:4px;font-size:13px;}
-.ma .mb{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;white-space:pre-wrap;font-size:14px;}
-.ms .mb{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);color:var(--accent);font-family:'Space Mono',monospace;font-size:10px;text-align:center;border-radius:8px;letter-spacing:.05em;}
-.mt{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);margin-top:4px;padding:0 4px;}
+.mu{align-self:flex-end;}.ma{align-self:flex-start;max-width:95%;}.ms{align-self:center;max-width:100%;}
+.mb{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.7;}
+.mu .mb{background:linear-gradient(135deg,var(--blue),#0077ee);color:white;border-bottom-right-radius:4px;font-size:12px;}
+.ma .mb{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;white-space:pre-wrap;font-size:13px;}
+.ms .mb{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);color:var(--accent);font-family:'Space Mono',monospace;font-size:9px;text-align:center;border-radius:8px;letter-spacing:.05em;}
+.mt{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);margin-top:3px;padding:0 4px;}
 .mu .mt{text-align:right;}
 
+/* TRADES PANEL */
+.trade-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px;}
+.trade-side{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;width:60px;flex-shrink:0;}
+.trade-side.buy{color:var(--accent);}
+.trade-side.sell{color:var(--red);}
+.trade-info{flex:1;}
+.trade-pair{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;margin-bottom:2px;}
+.trade-detail{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);}
+.trade-result{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;text-align:right;flex-shrink:0;}
+.trade-result.win{color:var(--accent);}
+.trade-result.loss{color:var(--red);}
+.trade-result.open{color:var(--yellow);}
+.stats-row{display:flex;gap:8px;margin-bottom:10px;}
+.stat-box{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;}
+.stat-val{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;margin-bottom:2px;}
+.stat-val.green{color:var(--accent);}
+.stat-val.red{color:var(--red);}
+.stat-val.yellow{color:var(--yellow);}
+.stat-label{font-family:'Space Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:.08em;}
+
 /* INPUT */
-#inp{display:flex;gap:8px;padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
-#mi{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:22px;padding:11px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+#inp{display:flex;gap:8px;padding:8px 14px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+#mi{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:9px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
 #mi:focus{border-color:var(--blue);}
 #mi::placeholder{color:var(--text2);}
-#sb{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--accent));border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s;}
+#sb{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--accent));border:none;color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 #sb:active{transform:scale(.88);}
+
+/* SPINNER */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* CANDLE MINI CHART */
+#mini-chart{width:100%;height:80px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;}
+
 #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);pointer-events:none;opacity:0;transition:all .3s;z-index:100;white-space:nowrap;}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div id="app">
+
   <header>
     <div class="logo">
       <div class="lhex">⬡</div>
-      <div><div class="ltxt">TRADING IA</div><div class="lsub">MONITOR AO VIVO</div></div>
+      <div><div class="ltxt">TRADING PRO IA</div><div class="lsub">DADOS REAIS · MULTI-TF</div></div>
     </div>
-    <div class="spill"><div class="sdot" id="sd"></div><span id="st">OFFLINE</span></div>
+    <div class="hright">
+      <div class="session-pill" id="session-pill">CARREGANDO</div>
+      <div id="clock">--:--:--</div>
+    </div>
   </header>
 
+  <!-- SINAL PRINCIPAL -->
   <div id="sbar">
     <div class="scard" id="scard">
-      <div class="sico" id="sico">⏳</div>
+      <div class="sico" id="sico">📊</div>
       <div class="sinf">
-        <div class="sact" id="sact">AGUARDANDO</div>
-        <div class="sreason" id="sreason">Inicie o monitoramento ao vivo...</div>
-        <div class="scount"><span id="scount-label"></span><div class="bar" id="scount-bar"></div></div>
+        <div class="sact" id="sact">AGUARDANDO ANÁLISE</div>
+        <div class="sreason" id="sreason">Configure o par e clique em Analisar</div>
+        <div class="smeta" id="smeta"></div>
       </div>
-      <div class="stime" id="stime">--:--:--</div>
+      <div class="sright">
+        <div class="stime" id="stime">--:--:--</div>
+        <div class="sconf" id="sconf"></div>
+        <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--text2);margin-top:4px;" id="sprice">--</div>
+      </div>
     </div>
   </div>
 
-  <div id="scr">
-    <div id="wrap">
-      <div class="ph" id="ph"><div class="ic">🖥️</div><p>CLIQUE EM COMPARTILHAR TELA<br/>PARA INICIAR O MONITORAMENTO</p></div>
-      <video id="vid" autoplay muted playsinline></video>
-      <canvas id="cnv"></canvas>
-      <div class="aov" id="aov"><div class="scanl"></div><span>ANALISANDO...</span></div>
-      <div id="tbadge">--s</div>
-    </div>
-  </div>
-
+  <!-- CONTROLES -->
   <div id="ctrl">
-    <button class="btn bp" id="bsh" onclick="startShare()">📲 COMPARTILHAR TELA</button>
-    <button class="btn bl" id="blv" onclick="toggleLive()" disabled>▶ AO VIVO</button>
-    <button class="btn bs" id="bsn" onclick="doSnap()" disabled>📸 SNAP</button>
+    <div class="cgroup">
+      <span class="clabel">PAR:</span>
+      <select id="sel-pair">
+        <option value="EUR/USD">EUR/USD</option>
+        <option value="GBP/USD">GBP/USD</option>
+        <option value="USD/JPY">USD/JPY</option>
+        <option value="USD/CHF">USD/CHF</option>
+        <option value="AUD/USD">AUD/USD</option>
+        <option value="USD/CAD">USD/CAD</option>
+        <option value="XAU/USD">XAU/USD</option>
+        <option value="EUR/GBP">EUR/GBP</option>
+      </select>
+    </div>
+    <div class="cgroup">
+      <span class="clabel">TF:</span>
+      <select id="sel-tf">
+        <option value="1min">M1</option>
+        <option value="5min" selected>M5</option>
+        <option value="15min">M15</option>
+        <option value="30min">M30</option>
+        <option value="1h">H1</option>
+      </select>
+    </div>
+    <div class="cgroup" style="flex:1;gap:6px;">
+      <button class="btn btn-analyze" id="btn-analyze" onclick="runAnalysis()">
+        📊 ANALISAR AGORA
+      </button>
+      <button class="btn btn-auto" id="btn-auto" onclick="toggleAuto()">▶ AUTO</button>
+    </div>
   </div>
 
-  <div id="ibar">
-    <span>A CADA:</span>
-    <div class="iopt" data-s="15" onclick="setIv(this)">15s</div>
-    <div class="iopt on" data-s="30" onclick="setIv(this)">30s</div>
-    <div class="iopt" data-s="60" onclick="setIv(this)">1min</div>
-    <div class="iopt" data-s="120" onclick="setIv(this)">2min</div>
+  <!-- TABS -->
+  <div id="tabs">
+    <div class="tab on" data-p="analysis" onclick="switchTab(this)">📈 ANÁLISE</div>
+    <div class="tab" data-p="chat" onclick="switchTab(this)">💬 CHAT</div>
+    <div class="tab" data-p="trades" onclick="switchTab(this)">📋 TRADES</div>
   </div>
 
+  <!-- PANELS -->
+  <div id="panels">
 
-  <div id="tfbar">
-    <span>TIMEFRAME:</span>
-    <div class="tfopt" data-tf="M1" onclick="setTf(this)">M1</div>
-    <div class="tfopt on" data-tf="M5" onclick="setTf(this)">M5</div>
-    <div class="tfopt" data-tf="M15" onclick="setTf(this)">M15</div>
-    <div class="tfopt" data-tf="M30" onclick="setTf(this)">M30</div>
-    <div class="tfopt" data-tf="H1" onclick="setTf(this)">H1</div>
-    <div class="tfopt" data-tf="H4" onclick="setTf(this)">H4</div>
-    <div class="tf-info" id="tf-info">SCALPING · M5</div>
-  </div>
-  <div id="qa">
-    <div class="qb" onclick="qa('Tendência atual? Dê o sinal direto: COMPRA, VENDA ou NEUTRO.')">📈 Tendência</div>
-    <div class="qb" onclick="qa('Tem sinal agora? Responda primeiro: COMPRA, VENDA ou NEUTRO.')">⚡ Sinal</div>
-    <div class="qb" onclick="qa('Suportes e resistências mais importantes agora?')">🎯 Sup/Res</div>
-    <div class="qb" onclick="qa('Como estão RSI, MACD e médias móveis?')">📊 Indicadores</div>
-    <div class="qb" onclick="qa('Tem padrão de candle importante? Qual o sinal?')">🕯️ Padrões</div>
-    <div class="qb" onclick="qa('Vale entrar agora? COMPRA, VENDA ou AGUARDA?')">💡 Opinião</div>
+    <!-- ANÁLISE -->
+    <div class="panel on" id="panel-analysis">
+      <canvas id="mini-chart"></canvas>
+
+      <div class="analysis-grid">
+        <div class="acard">
+          <div class="acard-title">PREÇO ATUAL</div>
+          <div class="acard-val" id="ac-price">--</div>
+        </div>
+        <div class="acard">
+          <div class="acard-title">TENDÊNCIA M5</div>
+          <div class="acard-val" id="ac-trend">--</div>
+        </div>
+        <div class="acard">
+          <div class="acard-title">VOLATILIDADE</div>
+          <div class="acard-val" id="ac-vol">--</div>
+        </div>
+        <div class="acard">
+          <div class="acard-title">VARIAÇÃO 24H</div>
+          <div class="acard-val" id="ac-change">--</div>
+        </div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">MULTI-TIMEFRAME</div>
+        <div id="mtf-rows">
+          <div class="tf-row"><span class="tf-name">H4 (Macro)</span><span class="tf-signal neutral" id="tf-h4">--</span></div>
+          <div class="tf-row"><span class="tf-name">H1 (Tendência)</span><span class="tf-signal neutral" id="tf-h1">--</span></div>
+          <div class="tf-row"><span class="tf-name">M15 (Swing)</span><span class="tf-signal neutral" id="tf-m15">--</span></div>
+          <div class="tf-row"><span class="tf-name">M5 (Entrada)</span><span class="tf-signal neutral" id="tf-m5">--</span></div>
+        </div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">ÚLTIMOS 10 CANDLES (fechamento)</div>
+        <div id="ac-candles" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);line-height:2;"></div>
+      </div>
+
+      <div class="acard" id="ac-analysis-text" style="display:none;">
+        <div class="acard-title">ANÁLISE COMPLETA DA IA</div>
+        <div id="ac-full-text" style="font-size:12px;line-height:1.8;white-space:pre-wrap;color:var(--text);"></div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="panel" id="panel-chat" style="gap:10px;">
+      <div class="msg ms"><div class="mb">💬 CHAT COM O ASSISTENTE<br/>Faça perguntas sobre o mercado</div></div>
+    </div>
+
+    <!-- TRADES -->
+    <div class="panel" id="panel-trades">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val green" id="stat-wins">0</div>
+          <div class="stat-label">WINS</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val red" id="stat-losses">0</div>
+          <div class="stat-label">LOSSES</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val yellow" id="stat-wr">--%</div>
+          <div class="stat-label">WIN RATE</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-pips">0</div>
+          <div class="stat-label">PIPS</div>
+        </div>
+      </div>
+      <div id="trades-list">
+        <div class="msg ms"><div class="mb">📋 Nenhum trade registrado ainda.<br/>Os sinais serão salvos automaticamente.</div></div>
+      </div>
+    </div>
+
   </div>
 
-  <div id="chat">
-    <div class="msg ms"><div class="mb">⬡ TRADING ASSISTANT IA PRONTO<br/>Compartilhe a tela e ative AO VIVO — análise automática a cada 30s</div></div>
-  </div>
-
+  <!-- INPUT -->
   <div id="inp">
-    <input type="text" id="mi" placeholder="Pergunte sobre o gráfico..."/>
-    <button id="sb" onclick="send()">➤</button>
+    <input type="text" id="mi" placeholder="Pergunte sobre o mercado..."/>
+    <button id="sb" onclick="sendChat()">➤</button>
   </div>
+
 </div>
 <div id="toast"></div>
 
 <script>
-let ms=null,live=false,ivS=30,cd=0,cdT=null,busy=false,hist=[],currentTf='M5',currentAtivo='',lastSignal=null,lastSignalCount=0,signalHistory=[];
-const vid=document.getElementById('vid'),cnv=document.getElementById('cnv'),cx=cnv.getContext('2d'),
-  chat=document.getElementById('chat'),sd=document.getElementById('sd'),st=document.getElementById('st'),
-  aov=document.getElementById('aov'),tb=document.getElementById('tbadge'),ph=document.getElementById('ph'),
-  blv=document.getElementById('blv'),bsn=document.getElementById('bsn'),bsh=document.getElementById('bsh');
+// ── ESTADO ──
+let autoTimer = null;
+let autoInterval = 60;
+let isAnalyzing = false;
+let candleData = null;
+let chatHistory = [];
+let trades = [];
+let currentSignal = null;
+let signalHistory = [];
 
-const TF_CONFIG = {
-  'M1':  { label:'SCALPING · M1',  dur:'1-3 candles' },
-  'M5':  { label:'SCALPING · M5',  dur:'2-5 candles' },
-  'M15': { label:'DAY TRADE · M15',dur:'3-8 candles' },
-  'M30': { label:'DAY TRADE · M30',dur:'2-6 candles' },
-  'H1':  { label:'SWING · H1',     dur:'4-12 horas'  },
-  'H4':  { label:'SWING · H4',     dur:'1-3 dias'    },
-};
+// ── SESSÕES ──
+function getSession() {
+  const now = new Date();
+  const utc = now.getUTCHours() * 60 + now.getUTCMinutes();
+  // Tokyo: 00:00-09:00 UTC, London: 08:00-17:00 UTC, NY: 13:00-22:00 UTC
+  const tokyo   = utc >= 0   && utc < 540;
+  const london  = utc >= 480 && utc < 1020;
+  const ny      = utc >= 780 && utc < 1320;
+  const overlap = london && ny; // 13:00-17:00 UTC = melhor momento
 
-
-function getPrompt() {
-  const cfg = TF_CONFIG[currentTf];
-  const ativoStr = currentAtivo ? 'no par ' + currentAtivo : 'no par visivel na tela';
-
-  let ctxHistorico = '';
-  if(signalHistory.length >= 3) {
-    const ult = signalHistory.slice(-5);
-    const compras = ult.filter(s=>s==='COMPRA').length;
-    const vendas  = ult.filter(s=>s==='VENDA').length;
-    ctxHistorico = '\n\nATENCAO VIES: Ultimos sinais: ' + ult.join(', ') + '. ';
-    if(compras >= 4) ctxHistorico += 'Voce deu COMPRA ' + compras + 'x seguidas. REVISE COM CETICISMO MAXIMO. Se nao houver setup NOVO e CLARO, responda NEUTRO.';
-    else if(vendas >= 4) ctxHistorico += 'Voce deu VENDA ' + vendas + 'x seguidas. REVISE COM CETICISMO MAXIMO. Se nao houver setup NOVO e CLARO, responda NEUTRO.';
-    else ctxHistorico += 'Seja imparcial.';
-  }
-
-  return 'Voce e um trader senior de Forex extremamente criterioso analisando price action puro ' + ativoStr + ' no ' + currentTf + '.' + ctxHistorico + '\n\nSUA MISSAO: PROTEGER O CAPITAL. Sinais errados custam dinheiro.\n\nSO DE COMPRA ou VENDA se TODOS os criterios abaixo forem verdadeiros:\n1. Tendencia do ' + currentTf + ' esta CLARA (HH+HL para alta, LH+LL para baixa)\n2. Preco esta em zona tecnica relevante (suporte, resistencia, topo/fundo anterior)\n3. Ha pelo menos 1 candle de sinal claro (engolfo, pin bar, inside bar)\n4. Risco/retorno favoravel (alvo minimo 1.5x o stop)\n\nSe QUALQUER criterio faltar -> NEUTRO obrigatorio, sem excecao.\n\nSITUACOES QUE EXIGEM NEUTRO:\n- Mercado lateral sem direcao clara\n- Preco no meio do range sem zona tecnica\n- Candles indefinidos ou dojis no meio da tendencia\n- Mesmo sinal 4+ vezes sem o preco se mover\n- Tendencia fraca ou duvidosa\n\nRESPONDA EXATAMENTE neste formato:\n\nSINAL: [COMPRA / VENDA / NEUTRO]\n\nCONFIANCA: [ALTA / MEDIA / BAIXA]\n\nCHECKLIST:\n- Tendencia clara no ' + currentTf + '? [SIM/NAO]\n- Preco em zona tecnica? [SIM/NAO]\n- Candle de sinal presente? [SIM/NAO]\n- R/R favoravel? [SIM/NAO]\n\nCONFLUENCIAS:\n- [o que justifica - seja especifico ou diga NENHUMA]\n- [segunda confluencia se houver]\n\nESTRUTURA:\n- Tendencia: [alta / baixa / lateral]\n- Suporte: [nivel]\n- Resistencia: [nivel]\n- Posicao do preco: [proximo a suporte / resistencia / meio do range]\n\nENTRADA: [condicao exata]\nSTOP: [nivel de invalidacao]\nALVO: [nivel realista]\n\nAnalise educacional.';
-}
-
-function setAtivo(el) {
-  document.querySelectorAll('.apre').forEach(e => e.classList.remove('on'));
-  el.classList.add('on');
-  const novo = el.dataset.a;
-  document.getElementById('ativo-input').value = novo;
-  if(novo !== currentAtivo) {
-    currentAtivo = novo;
-    resetContador();
-    addMsg('ms', '📊 Ativo alterado para ' + currentAtivo + ' — contador zerado!');
+  const pill = document.getElementById('session-pill');
+  if (overlap) {
+    pill.textContent = '🔥 LONDON+NY';
+    pill.className = 'session-pill overlap';
+    return { name: 'London+NY (overlap)', best: true };
+  } else if (ny) {
+    pill.textContent = '🗽 NEW YORK';
+    pill.className = 'session-pill ny';
+    return { name: 'New York', best: true };
+  } else if (london) {
+    pill.textContent = '🇬🇧 LONDON';
+    pill.className = 'session-pill london';
+    return { name: 'London', best: true };
+  } else if (tokyo) {
+    pill.textContent = '🗼 TÓQUIO';
+    pill.className = 'session-pill tokyo';
+    return { name: 'Tóquio', best: false };
+  } else {
+    pill.textContent = '💤 FECHADO';
+    pill.className = 'session-pill';
+    return { name: 'Mercado calmo', best: false };
   }
 }
 
-function onAtivoType() {
-  const val = document.getElementById('ativo-input').value.toUpperCase();
-  document.getElementById('ativo-input').value = val;
-  document.querySelectorAll('.apre').forEach(e => {
-    e.classList.toggle('on', e.dataset.a === val);
+// ── RELÓGIO ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) + ' BRT';
+  getSession();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── BUSCA DADOS REAIS ──
+async function fetchCandles() {
+  const pair = document.getElementById('sel-pair').value;
+  const tf   = document.getElementById('sel-tf').value;
+
+  try {
+    const res = await fetch(`/api/candles?symbol=${encodeURIComponent(pair)}&interval=${tf}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    candleData = data;
+    updateAnalysisCards(data);
+    drawMiniChart(data.candles);
+    return data;
+  } catch(e) {
+    toast('❌ Erro ao buscar dados: ' + e.message);
+    return null;
+  }
+}
+
+// ── ATUALIZA CARDS ──
+function updateAnalysisCards(data) {
+  const candles = data.candles || [];
+  if (!candles.length) return;
+
+  const price = parseFloat(data.price || candles[0].close);
+  const prev24 = candles[Math.min(287, candles.length-1)];
+  const change = prev24 ? ((price - parseFloat(prev24.close)) / parseFloat(prev24.close) * 100) : 0;
+
+  // ATR (volatilidade) dos últimos 14 candles
+  const atrCandles = candles.slice(0, 14);
+  const atr = atrCandles.reduce((sum, c) => sum + (parseFloat(c.high) - parseFloat(c.low)), 0) / atrCandles.length;
+  const digits = price < 10 ? 2 : price < 100 ? 3 : 5;
+  const pipFactor = price > 10 ? 100 : 10000;
+  const atrPips = Math.round(atr * pipFactor);
+
+  // Tendência simples: EMA rápida vs EMA lenta
+  const closes = candles.slice(0, 20).map(c => parseFloat(c.close)).reverse();
+  const ema9  = calcEMA(closes, 9);
+  const ema21 = calcEMA(closes, 21);
+  const trend = ema9 > ema21 ? '⬆️ ALTA' : ema9 < ema21 ? '⬇️ BAIXA' : '↔️ LATERAL';
+  const trendCls = ema9 > ema21 ? 'up' : ema9 < ema21 ? 'down' : 'neutral';
+
+  document.getElementById('ac-price').textContent = price.toFixed(digits);
+  document.getElementById('sprice').textContent = price.toFixed(digits);
+
+  const trendEl = document.getElementById('ac-trend');
+  trendEl.textContent = trend;
+  trendEl.className = 'acard-val ' + trendCls;
+
+  document.getElementById('ac-vol').textContent = atrPips + ' pips';
+  document.getElementById('ac-vol').className = 'acard-val ' + (atrPips > 15 ? 'up' : 'neutral');
+
+  const changeEl = document.getElementById('ac-change');
+  changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(3) + '%';
+  changeEl.className = 'acard-val ' + (change > 0 ? 'up' : change < 0 ? 'down' : 'neutral');
+
+  // Últimos 10 candles
+  const candleStr = candles.slice(0, 10).map((c, i) => {
+    const o = parseFloat(c.open), cl = parseFloat(c.close);
+    const dir = cl > o ? '🟢' : cl < o ? '🔴' : '⬜';
+    const pips = Math.round(Math.abs(cl - o) * pipFactor);
+    return `${dir} ${c.datetime?.slice(11,16) || i} | O:${o.toFixed(digits)} C:${cl.toFixed(digits)} | ${pips}p`;
+  }).join('\n');
+  document.getElementById('ac-candles').textContent = candleStr;
+
+  // Multi-timeframe com H1 e H4
+  updateMTF(data, ema9, ema21);
+}
+
+function calcEMA(prices, period) {
+  if (prices.length < period) return prices[prices.length-1];
+  const k = 2 / (period + 1);
+  let ema = prices.slice(0, period).reduce((a,b) => a+b, 0) / period;
+  for (let i = period; i < prices.length; i++) {
+    ema = prices[i] * k + ema * (1 - k);
+  }
+  return ema;
+}
+
+function updateMTF(data, ema9, ema21) {
+  // M5 tendência
+  const m5sig = ema9 > ema21 ? 'ALTA ⬆️' : ema9 < ema21 ? 'BAIXA ⬇️' : 'LATERAL ↔️';
+  const m5cls = ema9 > ema21 ? 'buy' : ema9 < ema21 ? 'sell' : 'neutral';
+  setTFSignal('tf-m5', m5sig, m5cls);
+
+  // H1
+  const h1c = (data.h1 || []).slice(0, 21).map(c => parseFloat(c.close)).reverse();
+  if (h1c.length >= 21) {
+    const h1e9 = calcEMA(h1c, 9), h1e21 = calcEMA(h1c, 21);
+    const h1sig = h1e9 > h1e21 ? 'ALTA ⬆️' : h1e9 < h1e21 ? 'BAIXA ⬇️' : 'LATERAL ↔️';
+    const h1cls = h1e9 > h1e21 ? 'buy' : h1e9 < h1e21 ? 'sell' : 'neutral';
+    setTFSignal('tf-h1', h1sig, h1cls);
+  }
+
+  // H4
+  const h4c = (data.h4 || []).slice(0, 10).map(c => parseFloat(c.close)).reverse();
+  if (h4c.length >= 5) {
+    const h4e = calcEMA(h4c, Math.min(5, h4c.length));
+    const h4prev = h4c[h4c.length - 2] || h4c[0];
+    const h4sig = h4e > h4prev ? 'ALTA ⬆️' : h4e < h4prev ? 'BAIXA ⬇️' : 'LATERAL ↔️';
+    const h4cls = h4e > h4prev ? 'buy' : h4e < h4prev ? 'sell' : 'neutral';
+    setTFSignal('tf-h4', h4sig, h4cls);
+    // M15 estimado
+    setTFSignal('tf-m15', h4sig, h4cls);
+  }
+}
+
+function setTFSignal(id, text, cls) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = text; el.className = 'tf-signal ' + cls; }
+}
+
+// ── MINI GRÁFICO DE VELAS ──
+function drawMiniChart(candles) {
+  const canvas = document.getElementById('mini-chart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 80;
+
+  const data = candles.slice(0, 40).reverse();
+  if (!data.length) return;
+
+  const highs  = data.map(c => parseFloat(c.high));
+  const lows   = data.map(c => parseFloat(c.low));
+  const maxP   = Math.max(...highs);
+  const minP   = Math.min(...lows);
+  const range  = maxP - minP || 0.001;
+  const W      = canvas.width;
+  const H      = canvas.height;
+  const cw     = Math.floor(W / data.length) - 1;
+
+  ctx.clearRect(0, 0, W, H);
+
+  data.forEach((c, i) => {
+    const o  = parseFloat(c.open);
+    const cl = parseFloat(c.close);
+    const h  = parseFloat(c.high);
+    const l  = parseFloat(c.low);
+    const isBull = cl >= o;
+    const x  = i * (cw + 1);
+    const yH = H - ((h - minP) / range) * (H - 4) - 2;
+    const yL = H - ((l - minP) / range) * (H - 4) - 2;
+    const yO = H - ((o - minP) / range) * (H - 4) - 2;
+    const yC = H - ((cl - minP) / range) * (H - 4) - 2;
+
+    ctx.strokeStyle = isBull ? '#00e5a0' : '#ff3d5a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + cw/2, yH);
+    ctx.lineTo(x + cw/2, yL);
+    ctx.stroke();
+
+    ctx.fillStyle = isBull ? '#00e5a0' : '#ff3d5a';
+    const bodyY = Math.min(yO, yC);
+    const bodyH = Math.max(Math.abs(yC - yO), 1);
+    ctx.fillRect(x, bodyY, cw, bodyH);
   });
 }
 
-function onAtivoChange() {
-  const novo = document.getElementById('ativo-input').value.trim().toUpperCase();
-  if(novo && novo !== currentAtivo) {
-    currentAtivo = novo;
-    resetContador();
-    addMsg('ms', '📊 Ativo: ' + currentAtivo + ' — contador zerado!');
+// ── ANÁLISE COMPLETA COM IA ──
+async function runAnalysis() {
+  if (isAnalyzing) return;
+  isAnalyzing = true;
+
+  const btn = document.getElementById('btn-analyze');
+  btn.innerHTML = '<div class="spin"></div> ANALISANDO...';
+  btn.disabled = true;
+
+  toast('📊 Buscando dados reais...');
+
+  const data = await fetchCandles();
+  if (!data) {
+    isAnalyzing = false;
+    btn.innerHTML = '📊 ANALISAR AGORA';
+    btn.disabled = false;
+    return;
+  }
+
+  const session = getSession();
+  const pair = document.getElementById('sel-pair').value;
+  const tf   = document.getElementById('sel-tf').value;
+  const candles = data.candles.slice(0, 30);
+  const h1c     = data.h1.slice(0, 12);
+  const h4c     = data.h4.slice(0, 5);
+  const price   = data.price;
+
+  // Monta contexto dos dados reais
+  const candlesTxt = candles.map(c =>
+    `${c.datetime?.slice(0,16)} O:${c.open} H:${c.high} L:${c.low} C:${c.close}`
+  ).join('\n');
+
+  const h1txt = h1c.map(c =>
+    `${c.datetime?.slice(0,16)} O:${c.open} H:${c.high} L:${c.low} C:${c.close}`
+  ).join('\n');
+
+  const h4txt = h4c.map(c =>
+    `${c.datetime?.slice(0,16)} O:${c.open} H:${c.high} L:${c.low} C:${c.close}`
+  ).join('\n');
+
+  // Anti-viés
+  let biasWarning = '';
+  if (signalHistory.length >= 4) {
+    const last5 = signalHistory.slice(-5);
+    const buys  = last5.filter(s => s === 'COMPRA').length;
+    const sells = last5.filter(s => s === 'VENDA').length;
+    if (buys >= 4) biasWarning = `\n\n⚠️ ALERTA VIÉS: Últimos ${last5.length} sinais foram ${last5.join(', ')}. Você tem dado COMPRA repetidamente. Revise com MÁXIMO CETICISMO. Se não houver setup NOVO e CLARO, responda NEUTRO.`;
+    else if (sells >= 4) biasWarning = `\n\n⚠️ ALERTA VIÉS: Últimos ${last5.length} sinais foram ${last5.join(', ')}. Revise com MÁXIMO CETICISMO.`;
+  }
+
+  const prompt = `Você é um analista técnico sênior de Forex. Analise os dados REAIS abaixo e dê um sinal preciso.${biasWarning}
+
+PAR: ${pair} | TIMEFRAME ENTRADA: ${tf} | SESSÃO: ${session.name} | PREÇO ATUAL: ${price}
+${!session.best ? '⚠️ ATENÇÃO: Sessão de baixa liquidez. Prefira NEUTRO a não ser que o setup seja muito claro.' : '✅ Boa liquidez — sessão ativa.'}
+
+=== CANDLES ${tf} (mais recente primeiro) ===
+${candlesTxt}
+
+=== CANDLES H1 (tendência) ===
+${h1txt}
+
+=== CANDLES H4 (macro) ===
+${h4txt}
+
+INSTRUÇÕES DE ANÁLISE:
+1. Identifique a estrutura de mercado no H4 e H1 (topos, fundos, tendência)
+2. Verifique se o ${tf} está alinhado com o H1 e H4
+3. Calcule suportes e resistências com os dados reais
+4. Identifique padrão de candle de entrada se houver
+5. Calcule R/R baseado nos dados reais
+6. SÓ dê COMPRA ou VENDA com confluência de pelo menos 2 timeframes
+7. Se os timeframes divergirem → NEUTRO obrigatório
+
+RESPONDA EXATAMENTE neste formato:
+
+SINAL: [COMPRA / VENDA / NEUTRO]
+CONFIANÇA: [ALTA / MÉDIA / BAIXA]
+
+ANÁLISE H4: [tendência macro com valores reais]
+ANÁLISE H1: [tendência com valores reais]
+ANÁLISE ${tf}: [setup de entrada com valores reais]
+
+CONFLUÊNCIA TIMEFRAMES: [ALINHADOS / DIVERGENTES / PARCIAL]
+
+SETUP:
+- Padrão: [nome do padrão ou NENHUM]
+- Entrada: [preço exato ou condição]
+- Stop Loss: [preço exato — baseado nos dados]
+- Take Profit: [preço exato — baseado nos dados]
+- R/R: [ex: 1:2.3]
+- Pips de risco: [número]
+
+MOTIVO: [2-3 frases explicando o sinal com referência aos dados reais]
+
+⚠️ Análise educacional.`;
+
+  try {
+    const msgs = [...chatHistory.slice(-4), { role:'user', content: prompt }];
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs })
+    });
+    const d = await res.json();
+
+    if (d.content && d.content[0]) {
+      const reply = d.content[0].text;
+      chatHistory.push({ role:'user', content:'[Análise automática]' });
+      chatHistory.push({ role:'assistant', content: reply });
+      if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
+
+      updateSignalCard(reply, price);
+
+      // Mostra no painel de análise
+      document.getElementById('ac-analysis-text').style.display = 'block';
+      document.getElementById('ac-full-text').textContent = reply;
+
+      // Registra trade se for sinal direcional
+      const upper = reply.toUpperCase();
+      const isBuy  = /SINAL:\s*COMPRA/.test(upper);
+      const isSell = /SINAL:\s*VENDA/.test(upper);
+      if (isBuy || isSell) {
+        recordTrade(reply, pair, price, isBuy ? 'COMPRA' : 'VENDA');
+      }
+    }
+  } catch(e) {
+    toast('❌ Erro na análise: ' + e.message);
+  }
+
+  isAnalyzing = false;
+  btn.innerHTML = '📊 ANALISAR AGORA';
+  btn.disabled = false;
+}
+
+// ── ATUALIZA CARD SINAL ──
+function updateSignalCard(text, price) {
+  const upper = text.toUpperCase();
+  const card  = document.getElementById('scard');
+  const ico   = document.getElementById('sico');
+  const act   = document.getElementById('sact');
+  const reason = document.getElementById('sreason');
+  const meta  = document.getElementById('smeta');
+  const conf  = document.getElementById('sconf');
+  const tm    = document.getElementById('stime');
+
+  let tipo = 'neutral', label = '🟡 NEUTRO', emoji = '⏸️', sig = 'NEUTRO';
+  if (/SINAL:\s*COMPRA/.test(upper)) { tipo='buy';  label='🟢 COMPRAR'; emoji='🚀'; sig='COMPRA'; }
+  else if (/SINAL:\s*VENDA/.test(upper)) { tipo='sell'; label='🔴 VENDER';  emoji='🔻'; sig='VENDA'; }
+
+  signalHistory.push(sig);
+  if (signalHistory.length > 20) signalHistory = signalHistory.slice(-20);
+  currentSignal = sig;
+
+  card.className = 'scard ' + tipo;
+  ico.textContent = emoji;
+  act.textContent = label;
+  tm.textContent  = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  // Confiança
+  let confText = '', confCls = '';
+  if (/CONFIANÇA:\s*ALTA/.test(upper))  { confText='✅ ALTA'; confCls='alta'; }
+  else if (/CONFIANÇA:\s*MÉDIA/.test(upper)) { confText='⚠️ MÉDIA'; confCls='media'; }
+  else if (/CONFIANÇA:\s*BAIXA/.test(upper)) { confText='❌ BAIXA'; confCls='baixa'; }
+  conf.textContent = confText;
+  conf.className   = 'sconf ' + confCls;
+
+  // Motivo
+  const motivoMatch = text.match(/MOTIVO:\s*(.+?)(?=\n\n|\n⚠️|$)/si);
+  reason.textContent = motivoMatch ? motivoMatch[1].trim().substring(0, 100) : '';
+
+  // Tags de entrada/stop/alvo
+  meta.innerHTML = '';
+  const entradaM = text.match(/Entrada:\s*([^\n]+)/i);
+  const stopM    = text.match(/Stop Loss:\s*([^\n]+)/i);
+  const tpM      = text.match(/Take Profit:\s*([^\n]+)/i);
+  const rrM      = text.match(/R\/R:\s*([^\n]+)/i);
+  if (entradaM) meta.innerHTML += `<span class="stag entry">E: ${entradaM[1].trim().substring(0,20)}</span>`;
+  if (stopM)    meta.innerHTML += `<span class="stag stop">SL: ${stopM[1].trim().substring(0,20)}</span>`;
+  if (tpM)      meta.innerHTML += `<span class="stag target">TP: ${tpM[1].trim().substring(0,20)}</span>`;
+  if (rrM)      meta.innerHTML += `<span class="stag rr">R/R: ${rrM[1].trim().substring(0,10)}</span>`;
+}
+
+// ── REGISTRA TRADE ──
+function recordTrade(analysis, pair, entryPrice, side) {
+  const slMatch = analysis.match(/Stop Loss:\s*([0-9.]+)/i);
+  const tpMatch = analysis.match(/Take Profit:\s*([0-9.]+)/i);
+  const rrMatch = analysis.match(/R\/R:\s*([^\n]+)/i);
+
+  const trade = {
+    id: Date.now(),
+    pair, side,
+    entry: parseFloat(entryPrice),
+    sl: slMatch ? parseFloat(slMatch[1]) : null,
+    tp: tpMatch ? parseFloat(tpMatch[1]) : null,
+    rr: rrMatch ? rrMatch[1].trim() : '--',
+    time: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
+    status: 'open',
+    pips: null,
+  };
+
+  trades.unshift(trade);
+  renderTrades();
+  toast(`📝 Trade registrado: ${side} ${pair} @ ${entryPrice}`);
+
+  // Verifica resultado após 5 minutos simulando (na prática seria monitorado)
+  setTimeout(() => checkTradeResult(trade.id), 300000);
+}
+
+async function checkTradeResult(tradeId) {
+  const trade = trades.find(t => t.id === tradeId);
+  if (!trade || trade.status !== 'open') return;
+
+  try {
+    const pair = document.getElementById('sel-pair').value;
+    const res = await fetch(`/api/candles?symbol=${encodeURIComponent(trade.pair)}&interval=5min`);
+    const data = await res.json();
+    const currentPrice = parseFloat(data.price || data.candles?.[0]?.close);
+
+    if (!currentPrice) return;
+
+    const pipFactor = currentPrice > 10 ? 100 : 10000;
+    let pips = 0;
+    let status = 'open';
+
+    if (trade.side === 'COMPRA') {
+      pips = Math.round((currentPrice - trade.entry) * pipFactor);
+      if (trade.sl && currentPrice <= trade.sl) { pips = Math.round((trade.sl - trade.entry) * pipFactor); status = 'loss'; }
+      else if (trade.tp && currentPrice >= trade.tp) { pips = Math.round((trade.tp - trade.entry) * pipFactor); status = 'win'; }
+      else status = pips >= 0 ? 'win' : 'loss';
+    } else {
+      pips = Math.round((trade.entry - currentPrice) * pipFactor);
+      if (trade.sl && currentPrice >= trade.sl) { pips = Math.round((trade.entry - trade.sl) * pipFactor); status = 'loss'; }
+      else if (trade.tp && currentPrice <= trade.tp) { pips = Math.round((trade.entry - trade.tp) * pipFactor); status = 'win'; }
+      else status = pips >= 0 ? 'win' : 'loss';
+    }
+
+    trade.pips = pips;
+    trade.status = status;
+    trade.closePrice = currentPrice;
+    renderTrades();
+    toast(`${status === 'win' ? '✅' : '❌'} Trade ${trade.pair}: ${pips > 0 ? '+' : ''}${pips} pips`);
+  } catch(e) {}
+}
+
+function renderTrades() {
+  const wins   = trades.filter(t => t.status === 'win').length;
+  const losses = trades.filter(t => t.status === 'loss').length;
+  const total  = wins + losses;
+  const wr     = total > 0 ? Math.round(wins/total*100) : 0;
+  const totalPips = trades.filter(t=>t.pips!==null).reduce((s,t)=>s+t.pips, 0);
+
+  document.getElementById('stat-wins').textContent    = wins;
+  document.getElementById('stat-losses').textContent  = losses;
+  document.getElementById('stat-wr').textContent      = wr + '%';
+  document.getElementById('stat-wr').className        = 'stat-val ' + (wr>=50?'green':'red');
+  document.getElementById('stat-pips').textContent    = (totalPips>=0?'+':'')+totalPips;
+  document.getElementById('stat-pips').className      = 'stat-val ' + (totalPips>=0?'green':'red');
+
+  const list = document.getElementById('trades-list');
+  if (!trades.length) {
+    list.innerHTML = '<div class="msg ms"><div class="mb">📋 Nenhum trade ainda.</div></div>';
+    return;
+  }
+
+  list.innerHTML = trades.map(t => `
+    <div class="trade-card">
+      <div class="trade-side ${t.side==='COMPRA'?'buy':'sell'}">${t.side==='COMPRA'?'▲ BUY':'▼ SELL'}</div>
+      <div class="trade-info">
+        <div class="trade-pair">${t.pair}</div>
+        <div class="trade-detail">
+          ${t.time} · E:${t.entry} · SL:${t.sl||'--'} · TP:${t.tp||'--'} · R/R:${t.rr}
+          ${t.closePrice ? `· Fechou:${t.closePrice}` : ''}
+        </div>
+      </div>
+      <div class="trade-result ${t.status}">
+        ${t.status==='open' ? '⏳ ABERTO' : (t.pips>=0?'+':'')+t.pips+' pips'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── AUTO ──
+function toggleAuto() {
+  const btn = document.getElementById('btn-auto');
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+    btn.textContent = '▶ AUTO';
+    btn.classList.remove('on');
+    toast('⏹ Auto análise pausada');
+  } else {
+    btn.textContent = '⏹ PARAR';
+    btn.classList.add('on');
+    toast('⏱ Auto análise a cada 60s');
+    runAnalysis();
+    autoTimer = setInterval(runAnalysis, 60000);
   }
 }
 
-function resetAtivo() {
-  resetContador();
-  addMsg('ms', '🔄 Contador zerado! Iniciando nova contagem para ' + (currentAtivo || 'o ativo atual'));
+// ── CHAT ──
+async function sendChat() {
+  const input = document.getElementById('mi');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  switchTab(document.querySelector('[data-p="chat"]'));
+  addChatMsg('mu', text);
+
+  const pair = document.getElementById('sel-pair').value;
+  const contextMsg = candleData
+    ? `Contexto atual: ${pair}, preço ${candleData.price}. Últimos 5 candles: ${
+        candleData.candles.slice(0,5).map(c=>`C:${c.close}`).join(' ')
+      }. Pergunta: ${text}`
+    : text;
+
+  const msgs = [...chatHistory.slice(-6), { role:'user', content: contextMsg }];
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages: msgs })
+    });
+    const d = await res.json();
+    if (d.content?.[0]) {
+      chatHistory.push({ role:'user', content: text });
+      chatHistory.push({ role:'assistant', content: d.content[0].text });
+      addChatMsg('ma', d.content[0].text);
+    }
+  } catch(e) { addChatMsg('ms', '❌ ' + e.message); }
 }
 
-function resetContador() {
-  lastSignal = null;
-  lastSignalCount = 0;
-  signalHistory = [];
-  // Limpa card de sinal
-  document.getElementById('sbar').classList.remove('show');
-  document.getElementById('scount-label').textContent = '';
-  document.getElementById('scount-bar').innerHTML = '';
-  hist = []; // limpa histórico de conversa também
+document.getElementById('mi').addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
+
+function addChatMsg(cls, txt) {
+  const panel = document.getElementById('panel-chat');
+  const t = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  if (cls==='ma') d.innerHTML = `<div class="mb">${txt}</div><div class="mt">${t} · IA</div>`;
+  else if (cls==='mu') d.innerHTML = `<div class="mb">${txt}</div><div class="mt">${t}</div>`;
+  else d.innerHTML = `<div class="mb">${txt}</div>`;
+  panel.appendChild(d);
+  panel.scrollTop = panel.scrollHeight;
 }
 
-function setTf(el) {
-  document.querySelectorAll('.tfopt').forEach(e => e.classList.remove('on'));
+// ── TABS ──
+function switchTab(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   el.classList.add('on');
-  currentTf = el.dataset.tf;
-  const cfg = TF_CONFIG[currentTf];
-  document.getElementById('tf-info').textContent = cfg.label;
-  addMsg('ms', '⏱ Timeframe alterado para ' + currentTf + ' — ' + cfg.label);
-  if (live) { stopLive(); setTimeout(startLive, 300); }
+  document.getElementById('panel-' + el.dataset.p).classList.add('on');
 }
 
-async function startShare(){
-  try{
-    if(ms)ms.getTracks().forEach(t=>t.stop());
-    ms=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:5},audio:false});
-    vid.srcObject=ms;vid.style.display='block';ph.style.display='none';
-    setSt('live','CONECTADO');blv.disabled=false;bsn.disabled=false;bsh.textContent='🔄 TROCAR';
-    toast('✅ Tela conectada!');
-    addMsg('ms','📲 Tela conectada! Clique em AO VIVO para análise automática a cada 30s.');
-    ms.getVideoTracks()[0].onended=()=>{stopLive();setSt('','OFFLINE');blv.disabled=true;bsn.disabled=true;vid.style.display='none';ph.style.display='flex';bsh.textContent='📲 COMPARTILHAR TELA';addMsg('ms','⚠️ Compartilhamento encerrado.');};
-  }catch(e){if(e.name!=='AbortError'){toast('❌ Erro ao compartilhar');addMsg('ms','❌ Use Chrome no PC para compartilhar a tela.');}}
+function toast(m) {
+  const el = document.getElementById('toast');
+  el.textContent = m;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 3000);
 }
 
-function frame(){
-  if(!ms||!vid.videoWidth)return null;
-  cnv.width=vid.videoWidth;cnv.height=vid.videoHeight;cx.drawImage(vid,0,0);
-  const mw=1280;
-  if(cnv.width>mw){const r=mw/cnv.width,t=document.createElement('canvas');t.width=mw;t.height=Math.round(cnv.height*r);t.getContext('2d').drawImage(cnv,0,0,t.width,t.height);return t.toDataURL('image/jpeg',.88).split(',')[1];}
-  return cnv.toDataURL('image/jpeg',.88).split(',')[1];
-}
+// Redimensiona canvas quando janela muda
+window.addEventListener('resize', () => {
+  if (candleData) drawMiniChart(candleData.candles);
+});
 
-async function analyze(txt){
-  if(busy)return;busy=true;
-  const f=frame();
-  if(!f){addMsg('ms','⚠️ Sem imagem. Compartilhe a tela primeiro.');busy=false;return;}
-  aov.classList.add('on');setSt('scan','ANALISANDO');
-  const msgs=[...hist.slice(-6),{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:f}},{type:'text',text:txt}]}];
-  try{
-    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})});
-    const d=await res.json();
-    if(d.content&&d.content[0]){
-      const rep=d.content[0].text;
-      hist.push({role:'user',content:txt});hist.push({role:'assistant',content:rep});
-      if(hist.length>16)hist=hist.slice(-16);
-      addMsg('ma',rep);updateSignal(rep);
-    }else addMsg('ms','❌ '+(d.error?.message||'Erro'));
-  }catch(e){addMsg('ms','❌ '+e.message);}
-  aov.classList.remove('on');setSt('live',ms?'CONECTADO':'OFFLINE');busy=false;
-}
-
-function updateSignal(text){
-  const u=text.toUpperCase(),card=document.getElementById('scard'),
-    ico=document.getElementById('sico'),act=document.getElementById('sact'),
-    reason=document.getElementById('sreason'),tm=document.getElementById('stime');
-  document.getElementById('sbar').classList.add('show');
-
-  let tipo='neutral',label='🟡 AGUARDAR',emoji='⏸️',newSig='NEUTRO';
-  if(u.includes('🟢')||(/SINAL:.*COMPRA/.test(u))){tipo='buy';label='🟢 COMPRAR';emoji='🚀';newSig='COMPRA';}
-  else if(u.includes('🔴')||(/SINAL:.*VENDA/.test(u))){tipo='sell';label='🔴 VENDER';emoji='🔻';newSig='VENDA';}
-
-  // Rastreia histórico de sinais
-  signalHistory.push(newSig);
-  if(signalHistory.length > 10) signalHistory = signalHistory.slice(-10);
-
-  if(newSig === lastSignal) {
-    lastSignalCount++;
-  } else {
-    lastSignal = newSig;
-    lastSignalCount = 1;
-  }
-
-  // Badge de confiança
-  let confBadge = '';
-  if(u.includes('CONFIANÇA: ALTA')||u.includes('ALTA ✅')) confBadge = ' ✅';
-  else if(u.includes('CONFIANÇA: MÉDIA')||u.includes('MÉDIA ⚠️')) confBadge = ' ⚠️';
-  else if(u.includes('CONFIANÇA: BAIXA')||u.includes('BAIXA ❌')) confBadge = ' ❌';
-
-  const ativoLabel = currentAtivo ? ' · '+currentAtivo : '';
-  card.className='scard '+tipo;
-  ico.textContent=emoji;
-  act.textContent=label+confBadge+ativoLabel;
-
-  // Contador visual com bolinhas
-  const countLabel = document.getElementById('scount-label');
-  const countBar = document.getElementById('scount-bar');
-  if(lastSignalCount > 0 && newSig !== 'NEUTRO') {
-    countLabel.textContent = 'Confirmado ' + lastSignalCount + 'x seguido' + (lastSignalCount >= 3 ? ' 🔥' : '');
-    countBar.innerHTML = signalHistory.slice(-8).map(s => {
-      const cls = s==='COMPRA'?'buy':s==='VENDA'?'sell':'neutral';
-      return '<div class="dot '+cls+'"></div>';
-    }).join('');
-  } else {
-    countLabel.textContent = '';
-    countBar.innerHTML = '';
-  }
-
-  // Extrai confluências como motivo
-  const confMatch = text.match(/CONFLUÊNCIAS:([\s\S]*?)(?=ESTRUTURA|ENTRADA|$)/i);
-  if(confMatch) {
-    const bullets = confMatch[1].trim().split('\n').map(l=>l.trim()).filter(l=>l.startsWith('•')||l.startsWith('-'));
-    reason.textContent = bullets.slice(0,2).join(' | ').substring(0,150) || 'Analisando estrutura...';
-  } else {
-    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>15&&!l.startsWith('SINAL')&&!l.startsWith('⚠️'));
-    reason.textContent=(lines[0]||'').substring(0,150);
-  }
-  tm.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-
-function toggleLive(){live?stopLive():startLive();}
-function startLive(){
-  document.getElementById('ibar').classList.add('on');
-  blv.textContent='⏹ PARAR';blv.classList.add('on');live=true;
-  addMsg('ms','⏱ Ao vivo ativado — análise a cada '+ivS+'s');
-  analyze(getPrompt());startCd();
-}
-function stopLive(){
-  if(cdT){clearInterval(cdT);cdT=null;}
-  document.getElementById('ibar').classList.remove('on');
-  blv.textContent='▶ AO VIVO';blv.classList.remove('on');live=false;tb.style.display='none';
-  addMsg('ms','⏹ Monitoramento pausado.');
-}
-function startCd(){
-  cd=ivS;tb.style.display='block';tb.textContent=cd+'s';
-  if(cdT)clearInterval(cdT);
-  cdT=setInterval(()=>{cd--;tb.textContent=cd+'s';if(cd<=0){clearInterval(cdT);if(!busy)analyze(getPrompt());setTimeout(startCd,400);}},1000);
-}
-function setIv(el){document.querySelectorAll('.iopt').forEach(e=>e.classList.remove('on'));el.classList.add('on');ivS=+el.dataset.s;if(live){stopLive();setTimeout(startLive,300);}}
-function doSnap(){addMsg('mu','📸 Analisando...');analyze(getPrompt());}
-function qa(t){if(!ms){toast('⚠️ Compartilhe a tela primeiro!');return;}addMsg('mu',t);analyze(t);}
-function send(){const i=document.getElementById('mi'),t=i.value.trim();if(!t)return;i.value='';addMsg('mu',t);ms?analyze(t):analyzeText(t);}
-async function analyzeText(t){
-  const msgs=[...hist.slice(-6),{role:'user',content:t}];
-  try{const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})});const d=await res.json();if(d.content?.[0]){hist.push({role:'user',content:t});hist.push({role:'assistant',content:d.content[0].text});addMsg('ma',d.content[0].text);}}catch(e){addMsg('ms','❌ '+e.message);}
-}
-document.getElementById('mi').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
-function addMsg(cls,txt){
-  const t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),d=document.createElement('div');
-  d.className='msg '+cls;
-  if(cls==='ma')d.innerHTML='<div class="mb">'+txt+'</div><div class="mt">'+t+' · IA</div>';
-  else if(cls==='mu')d.innerHTML='<div class="mb">'+txt+'</div><div class="mt">'+t+'</div>';
-  else d.innerHTML='<div class="mb">'+txt+'</div>';
-  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
-}
-function setSt(c,l){sd.className='sdot '+c;st.textContent=l;}
-function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2500);}
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
 </html>

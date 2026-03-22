@@ -1,17 +1,8 @@
 {
-  "name": "Trading Assistant IA",
-  "short_name": "TradeIA",
-  "description": "Assistente de IA para análise de trading em tempo real",
+  "name": "Trading Pro IA",
+  "short_name": "TradeProIA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#080c14",
-  "theme_color": "#00e5a0",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
-  ]
+  "theme_color": "#00e5a0"
 }
