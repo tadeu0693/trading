@@ -231,48 +231,20 @@ const TF_CONFIG = {
 
 function getPrompt() {
   const cfg = TF_CONFIG[currentTf];
-  const ctx = lastSignal ? `\n⚠️ CONTEXTO: O último sinal foi ${lastSignal} (confirmado ${lastSignalCount}x). SÓ mude se houver evidência FORTE de reversão.` : '';
+  const ativoStr = currentAtivo ? 'no par ' + currentAtivo : 'no par visivel na tela';
 
-  const ativoStr = currentAtivo ? `no par ${currentAtivo}` : 'no par visível na tela';
-  return `Você é um trader profissional de Forex analisando price action puro (sem indicadores) ${ativoStr} no timeframe ${currentTf}.${ctx}
+  let ctxHistorico = '';
+  if(signalHistory.length >= 3) {
+    const ult = signalHistory.slice(-5);
+    const compras = ult.filter(s=>s==='COMPRA').length;
+    const vendas  = ult.filter(s=>s==='VENDA').length;
+    ctxHistorico = '\n\nATENCAO VIES: Ultimos sinais: ' + ult.join(', ') + '. ';
+    if(compras >= 4) ctxHistorico += 'Voce deu COMPRA ' + compras + 'x seguidas. REVISE COM CETICISMO MAXIMO. Se nao houver setup NOVO e CLARO, responda NEUTRO.';
+    else if(vendas >= 4) ctxHistorico += 'Voce deu VENDA ' + vendas + 'x seguidas. REVISE COM CETICISMO MAXIMO. Se nao houver setup NOVO e CLARO, responda NEUTRO.';
+    else ctxHistorico += 'Seja imparcial.';
+  }
 
-REGRAS OBRIGATÓRIAS:
-1. Analise a ESTRUTURA completa do gráfico — não apenas os últimos candles
-2. Identifique: tendência maior, últimos topos e fundos, zonas de oferta/demanda
-3. SÓ emita COMPRA ou VENDA se houver pelo menos 2 confluências fortes
-4. Se o mercado estiver lateral ou indefinido → sempre NEUTRO/AGUARDAR
-5. Evite mudar de sinal sem motivo claro — consistência é mais importante que frequência
-
-CONFLUÊNCIAS VÁLIDAS para Forex price action:
-- Rompimento com fechamento acima/abaixo de zona chave
-- Candle de reversão em zona de suporte/resistência (engolfo, martelo, doji + direção)
-- Pullback para EMA em tendência clara
-- Estrutura de HH+HL (alta) ou LH+LL (baixa) confirmada
-- Falso rompimento (stop hunt) seguido de reversão
-
-RESPONDA EXATAMENTE neste formato:
-
-SINAL: [🟢 COMPRA / 🔴 VENDA / 🟡 NEUTRO — AGUARDAR]
-
-CONFIANÇA: [ALTA ✅ / MÉDIA ⚠️ / BAIXA ❌]
-
-CONFLUÊNCIAS:
-• [confluência 1 identificada]
-• [confluência 2 identificada]
-• [confluência 3 se houver]
-
-ESTRUTURA ${currentTf}:
-- Tendência: [alta / baixa / lateral]
-- Último topo: [nível]
-- Último fundo: [nível]
-- Zona de interesse: [nível e motivo]
-
-ENTRADA: [preço ou condição ideal para entrar]
-STOP: [onde invalida o setup]
-ALVO: [alvo realista baseado na estrutura]
-VALIDADE: [${cfg.dur}]
-
-⚠️ Análise educacional — não é recomendação de investimento.`;
+  return 'Voce e um trader senior de Forex extremamente criterioso analisando price action puro ' + ativoStr + ' no ' + currentTf + '.' + ctxHistorico + '\n\nSUA MISSAO: PROTEGER O CAPITAL. Sinais errados custam dinheiro.\n\nSO DE COMPRA ou VENDA se TODOS os criterios abaixo forem verdadeiros:\n1. Tendencia do ' + currentTf + ' esta CLARA (HH+HL para alta, LH+LL para baixa)\n2. Preco esta em zona tecnica relevante (suporte, resistencia, topo/fundo anterior)\n3. Ha pelo menos 1 candle de sinal claro (engolfo, pin bar, inside bar)\n4. Risco/retorno favoravel (alvo minimo 1.5x o stop)\n\nSe QUALQUER criterio faltar -> NEUTRO obrigatorio, sem excecao.\n\nSITUACOES QUE EXIGEM NEUTRO:\n- Mercado lateral sem direcao clara\n- Preco no meio do range sem zona tecnica\n- Candles indefinidos ou dojis no meio da tendencia\n- Mesmo sinal 4+ vezes sem o preco se mover\n- Tendencia fraca ou duvidosa\n\nRESPONDA EXATAMENTE neste formato:\n\nSINAL: [COMPRA / VENDA / NEUTRO]\n\nCONFIANCA: [ALTA / MEDIA / BAIXA]\n\nCHECKLIST:\n- Tendencia clara no ' + currentTf + '? [SIM/NAO]\n- Preco em zona tecnica? [SIM/NAO]\n- Candle de sinal presente? [SIM/NAO]\n- R/R favoravel? [SIM/NAO]\n\nCONFLUENCIAS:\n- [o que justifica - seja especifico ou diga NENHUMA]\n- [segunda confluencia se houver]\n\nESTRUTURA:\n- Tendencia: [alta / baixa / lateral]\n- Suporte: [nivel]\n- Resistencia: [nivel]\n- Posicao do preco: [proximo a suporte / resistencia / meio do range]\n\nENTRADA: [condicao exata]\nSTOP: [nivel de invalidacao]\nALVO: [nivel realista]\n\nAnalise educacional.';
 }
 
 function setAtivo(el) {
