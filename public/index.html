@@ -8,122 +8,127 @@
 <meta name="theme-color" content="#080c14"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg:#080c14; --bg2:#0d1422; --bg3:#111d30;
-  --border:#1a2840; --accent:#00e5a0; --blue:#0057ff;
-  --red:#ff3d5a; --yellow:#f5c400;
-  --text:#dde6f0; --text2:#5a7a9a;
-}
-* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-html, body { height:100%; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow:hidden; }
-#app { display:flex; flex-direction:column; height:100dvh; max-width:480px; margin:0 auto; }
+:root{--bg:#080c14;--bg2:#0d1422;--bg3:#111d30;--border:#1a2840;--accent:#00e5a0;--blue:#0057ff;--red:#ff3d5a;--yellow:#f5c400;--text:#dde6f0;--text2:#5a7a9a;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:900px;margin:0 auto;}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 8px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:10px;}
+.lhex{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:14px;animation:hp 3s ease-in-out infinite;}
+@keyframes hp{0%,100%{filter:brightness(1);}50%{filter:brightness(1.4) drop-shadow(0 0 8px var(--accent));}}
+.ltxt{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.05em;line-height:1.1;}
+.lsub{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.12em;}
+.spill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--text2);transition:all .3s;}
+.sdot.live{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:blink 1.2s ease-in-out infinite;}
+.sdot.scan{background:var(--yellow);box-shadow:0 0 8px var(--yellow);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-/* HEADER */
-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px 10px; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; }
-.logo { display:flex; align-items:center; gap:10px; }
-.lhex { width:34px; height:34px; background:linear-gradient(135deg,var(--blue),var(--accent)); clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%); display:flex; align-items:center; justify-content:center; font-size:16px; animation:hex-pulse 3s ease-in-out infinite; }
-@keyframes hex-pulse { 0%,100%{filter:brightness(1);} 50%{filter:brightness(1.4) drop-shadow(0 0 8px var(--accent));} }
-.ltxt { font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--accent); letter-spacing:.05em; line-height:1.1; }
-.lsub { font-family:'Space Mono',monospace; font-size:9px; color:var(--text2); letter-spacing:.12em; }
-.spill { display:flex; align-items:center; gap:6px; background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-family:'Space Mono',monospace; font-size:9px; color:var(--text2); }
-.sdot { width:7px; height:7px; border-radius:50%; background:var(--text2); transition:all .3s; }
-.sdot.live { background:var(--accent); box-shadow:0 0 8px var(--accent); animation:blink 1.2s ease-in-out infinite; }
-.sdot.scan { background:var(--yellow); box-shadow:0 0 8px var(--yellow); }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+/* SINAL DESTAQUE */
+#sbar{display:none;flex-shrink:0;padding:10px 14px;background:var(--bg2);border-bottom:2px solid var(--border);}
+#sbar.show{display:block;}
+.scard{border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;border:2px solid transparent;transition:all .4s;}
+.scard.buy{background:linear-gradient(135deg,rgba(0,229,160,.15),rgba(0,229,160,.04));border-color:var(--accent);}
+.scard.sell{background:linear-gradient(135deg,rgba(255,61,90,.15),rgba(255,61,90,.04));border-color:var(--red);}
+.scard.neutral{background:linear-gradient(135deg,rgba(245,196,0,.1),rgba(245,196,0,.03));border-color:var(--yellow);}
+.sico{font-size:40px;flex-shrink:0;line-height:1;}
+.sinf{flex:1;}
+.sact{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.06em;line-height:1;margin-bottom:4px;}
+.scard.buy .sact{color:var(--accent);}
+.scard.sell .sact{color:var(--red);}
+.scard.neutral .sact{color:var(--yellow);}
+.sreason{font-size:12px;color:var(--text2);line-height:1.4;}
+.stime{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);text-align:right;flex-shrink:0;}
 
-/* SCREEN */
-#scr { background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; }
-#wrap { position:relative; width:100%; aspect-ratio:16/9; background:#050810; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-#vid { width:100%; height:100%; object-fit:contain; display:none; }
-#cnv { display:none; }
-.ph { display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--text2); }
-.ph .ic { font-size:36px; }
-.ph p { font-family:'Space Mono',monospace; font-size:10px; text-align:center; letter-spacing:.08em; line-height:1.7; }
-.aov { position:absolute; inset:0; background:rgba(8,12,20,.78); display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px; backdrop-filter:blur(2px); }
-.aov.on { display:flex; }
-.scanl { width:80%; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); animation:scan 1.5s ease-in-out infinite; }
-@keyframes scan { 0%{transform:translateY(-55px);opacity:0;} 50%{opacity:1;} 100%{transform:translateY(55px);opacity:0;} }
-.aov span { font-family:'Space Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:.15em; }
-#tbadge { position:absolute; top:8px; right:8px; background:rgba(0,0,0,.75); border:1px solid var(--accent); border-radius:6px; padding:3px 8px; font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); display:none; }
+/* TELA */
+#scr{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+#wrap{position:relative;width:100%;height:150px;background:#050810;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#vid{width:100%;height:100%;object-fit:contain;display:none;}
+#cnv{display:none;}
+.ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text2);}
+.ph .ic{font-size:28px;}
+.ph p{font-family:'Space Mono',monospace;font-size:10px;text-align:center;letter-spacing:.08em;line-height:1.6;}
+.aov{position:absolute;inset:0;background:rgba(8,12,20,.78);display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;backdrop-filter:blur(2px);}
+.aov.on{display:flex;}
+.scanl{width:80%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 1.5s ease-in-out infinite;}
+@keyframes scan{0%{transform:translateY(-40px);opacity:0;}50%{opacity:1;}100%{transform:translateY(40px);opacity:0;}}
+.aov span{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.15em;}
+#tbadge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:1px solid var(--accent);border-radius:6px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);display:none;}
 
-/* CONTROLS */
-#ctrl { display:flex; gap:8px; padding:10px 14px; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; }
-.btn { flex:1; border:none; border-radius:10px; padding:11px 8px; font-family:'Space Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.05em; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:5px; }
-.btn:active { transform:scale(.95); }
-.bp { background:linear-gradient(135deg,var(--blue),#0088ff); color:white; }
-.bl { background:linear-gradient(135deg,#00b377,var(--accent)); color:#080c14; }
-.bl.on { background:linear-gradient(135deg,var(--red),#cc1133); color:white; }
-.bs { background:var(--bg3); color:var(--text); border:1px solid var(--border); }
-.btn:disabled { opacity:.4; pointer-events:none; }
+/* CONTROLES */
+#ctrl{display:flex;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.btn{flex:1;border:none;border-radius:10px;padding:10px 8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn:active{transform:scale(.95);}
+.bp{background:linear-gradient(135deg,var(--blue),#0088ff);color:white;}
+.bl{background:linear-gradient(135deg,#00b377,var(--accent));color:#080c14;}
+.bl.on{background:linear-gradient(135deg,var(--red),#cc1133);color:white;}
+.bs{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+.btn:disabled{opacity:.4;pointer-events:none;}
 
-/* INTERVAL */
-#ibar { display:none; align-items:center; gap:8px; padding:8px 14px; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; }
-#ibar.on { display:flex; }
-#ibar span { font-family:'Space Mono',monospace; font-size:10px; color:var(--text2); flex-shrink:0; }
-.iopt { padding:5px 12px; border-radius:16px; border:1px solid var(--border); background:var(--bg3); font-family:'Space Mono',monospace; font-size:10px; color:var(--text2); cursor:pointer; transition:all .2s; }
-.iopt.on { background:var(--accent); color:var(--bg); border-color:var(--accent); }
+/* INTERVALO */
+#ibar{display:none;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+#ibar.on{display:flex;}
+#ibar span{font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);flex-shrink:0;}
+.iopt{padding:5px 12px;border-radius:16px;border:1px solid var(--border);background:var(--bg3);font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:all .2s;}
+.iopt.on{background:var(--accent);color:var(--bg);border-color:var(--accent);}
 
-/* QUICK ACTIONS */
-#qa { display:flex; gap:6px; padding:8px 14px; overflow-x:auto; flex-shrink:0; scrollbar-width:none; background:var(--bg); border-bottom:1px solid var(--border); }
-#qa::-webkit-scrollbar { display:none; }
-.qb { flex-shrink:0; background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-family:'Space Mono',monospace; font-size:10px; color:var(--text2); cursor:pointer; white-space:nowrap; transition:all .2s; }
-.qb:active { background:var(--accent); color:var(--bg); border-color:var(--accent); transform:scale(.95); }
+/* QUICK */
+#qa{display:flex;gap:6px;padding:6px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border);}
+#qa::-webkit-scrollbar{display:none;}
+.qb{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.qb:hover,.qb:active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
 
-/* CHAT */
-#chat { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth; }
-#chat::-webkit-scrollbar { width:3px; }
-#chat::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-.msg { max-width:88%; animation:mi .3s cubic-bezier(.34,1.56,.64,1); }
-@keyframes mi { from{opacity:0;transform:translateY(12px) scale(.95);} to{opacity:1;transform:none;} }
-.mu { align-self:flex-end; }
-.ma { align-self:flex-start; }
-.ms { align-self:center; max-width:100%; }
-.mb { padding:10px 14px; border-radius:14px; font-size:13px; line-height:1.6; }
-.mu .mb { background:linear-gradient(135deg,var(--blue),#0077ee); color:white; border-bottom-right-radius:4px; }
-.ma .mb { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; white-space:pre-wrap; }
-.ms .mb { background:rgba(0,229,160,.07); border:1px solid rgba(0,229,160,.2); color:var(--accent); font-family:'Space Mono',monospace; font-size:10px; text-align:center; border-radius:8px; letter-spacing:.05em; }
-.mt { font-family:'Space Mono',monospace; font-size:9px; color:var(--text2); margin-top:4px; padding:0 4px; }
-.mu .mt { text-align:right; }
+/* CHAT — GRANDE */
+#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
+#chat::-webkit-scrollbar{width:4px;}
+#chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.msg{max-width:85%;animation:mi .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes mi{from{opacity:0;transform:translateY(10px) scale(.95);}to{opacity:1;transform:none;}}
+.mu{align-self:flex-end;}.ma{align-self:flex-start;max-width:92%;}.ms{align-self:center;max-width:100%;}
+.mb{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.75;}
+.mu .mb{background:linear-gradient(135deg,var(--blue),#0077ee);color:white;border-bottom-right-radius:4px;font-size:13px;}
+.ma .mb{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;white-space:pre-wrap;font-size:14px;}
+.ms .mb{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);color:var(--accent);font-family:'Space Mono',monospace;font-size:10px;text-align:center;border-radius:8px;letter-spacing:.05em;}
+.mt{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);margin-top:4px;padding:0 4px;}
+.mu .mt{text-align:right;}
 
 /* INPUT */
-#inp { display:flex; gap:8px; padding:10px 14px; padding-bottom:max(10px,env(safe-area-inset-bottom)); background:var(--bg2); border-top:1px solid var(--border); flex-shrink:0; }
-#mi { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:22px; padding:11px 16px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
-#mi:focus { border-color:var(--blue); }
-#mi::placeholder { color:var(--text2); }
-#sb { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--accent)); border:none; color:white; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; }
-#sb:active { transform:scale(.88); }
-
-/* TOAST */
-#toast { position:fixed; top:76px; left:50%; transform:translateX(-50%) translateY(-16px); background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:8px 18px; font-family:'Space Mono',monospace; font-size:11px; color:var(--text); pointer-events:none; opacity:0; transition:all .3s; z-index:100; white-space:nowrap; }
-#toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+#inp{display:flex;gap:8px;padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+#mi{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:22px;padding:11px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+#mi:focus{border-color:var(--blue);}
+#mi::placeholder{color:var(--text2);}
+#sb{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--accent));border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s;}
+#sb:active{transform:scale(.88);}
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);pointer-events:none;opacity:0;transition:all .3s;z-index:100;white-space:nowrap;}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div id="app">
-
   <header>
     <div class="logo">
       <div class="lhex">⬡</div>
-      <div>
-        <div class="ltxt">TRADING IA</div>
-        <div class="lsub">MONITOR AO VIVO</div>
-      </div>
+      <div><div class="ltxt">TRADING IA</div><div class="lsub">MONITOR AO VIVO</div></div>
     </div>
-    <div class="spill">
-      <div class="sdot" id="sd"></div>
-      <span id="st">OFFLINE</span>
-    </div>
+    <div class="spill"><div class="sdot" id="sd"></div><span id="st">OFFLINE</span></div>
   </header>
+
+  <div id="sbar">
+    <div class="scard" id="scard">
+      <div class="sico" id="sico">⏳</div>
+      <div class="sinf">
+        <div class="sact" id="sact">AGUARDANDO</div>
+        <div class="sreason" id="sreason">Inicie o monitoramento ao vivo...</div>
+      </div>
+      <div class="stime" id="stime">--:--:--</div>
+    </div>
+  </div>
 
   <div id="scr">
     <div id="wrap">
-      <div class="ph" id="ph">
-        <div class="ic">📱</div>
-        <p>TOQUE EM COMPARTILHAR TELA<br/>PARA INICIAR O MONITORAMENTO</p>
-      </div>
+      <div class="ph" id="ph"><div class="ic">🖥️</div><p>CLIQUE EM COMPARTILHAR TELA<br/>PARA INICIAR O MONITORAMENTO</p></div>
       <video id="vid" autoplay muted playsinline></video>
       <canvas id="cnv"></canvas>
       <div class="aov" id="aov"><div class="scanl"></div><span>ANALISANDO...</span></div>
@@ -134,246 +139,149 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   <div id="ctrl">
     <button class="btn bp" id="bsh" onclick="startShare()">📲 COMPARTILHAR TELA</button>
     <button class="btn bl" id="blv" onclick="toggleLive()" disabled>▶ AO VIVO</button>
-    <button class="btn bs" id="bsn" onclick="doSnap()" disabled>📸</button>
+    <button class="btn bs" id="bsn" onclick="doSnap()" disabled>📸 SNAP</button>
   </div>
 
   <div id="ibar">
     <span>A CADA:</span>
-    <div class="iopt on" data-s="15" onclick="setIv(this)">15s</div>
-    <div class="iopt" data-s="30" onclick="setIv(this)">30s</div>
+    <div class="iopt" data-s="15" onclick="setIv(this)">15s</div>
+    <div class="iopt on" data-s="30" onclick="setIv(this)">30s</div>
     <div class="iopt" data-s="60" onclick="setIv(this)">1min</div>
     <div class="iopt" data-s="120" onclick="setIv(this)">2min</div>
   </div>
 
   <div id="qa">
-    <div class="qb" onclick="qa('Qual a tendência atual do ativo?')">📈 Tendência</div>
-    <div class="qb" onclick="qa('Tem sinal de entrada ou saída agora?')">⚡ Sinal</div>
-    <div class="qb" onclick="qa('Quais são os suportes e resistências?')">🎯 Sup/Res</div>
+    <div class="qb" onclick="qa('Tendência atual? Dê o sinal direto: COMPRA, VENDA ou NEUTRO.')">📈 Tendência</div>
+    <div class="qb" onclick="qa('Tem sinal agora? Responda primeiro: COMPRA, VENDA ou NEUTRO.')">⚡ Sinal</div>
+    <div class="qb" onclick="qa('Suportes e resistências mais importantes agora?')">🎯 Sup/Res</div>
     <div class="qb" onclick="qa('Como estão RSI, MACD e médias móveis?')">📊 Indicadores</div>
-    <div class="qb" onclick="qa('Tem padrão de candle importante?')">🕯️ Padrões</div>
-    <div class="qb" onclick="qa('Qual sua opinião geral sobre esse ativo?')">💡 Opinião</div>
+    <div class="qb" onclick="qa('Tem padrão de candle importante? Qual o sinal?')">🕯️ Padrões</div>
+    <div class="qb" onclick="qa('Vale entrar agora? COMPRA, VENDA ou AGUARDA?')">💡 Opinião</div>
   </div>
 
   <div id="chat">
-    <div class="msg ms">
-      <div class="mb">⬡ TRADING ASSISTANT IA PRONTO<br/>Compartilhe sua tela para análise ao vivo</div>
-    </div>
+    <div class="msg ms"><div class="mb">⬡ TRADING ASSISTANT IA PRONTO<br/>Compartilhe a tela e ative AO VIVO — análise automática a cada 30s</div></div>
   </div>
 
   <div id="inp">
     <input type="text" id="mi" placeholder="Pergunte sobre o gráfico..."/>
     <button id="sb" onclick="send()">➤</button>
   </div>
-
 </div>
 <div id="toast"></div>
 
 <script>
-let ms=null, live=false, ivS=15, cd=0, cdT=null, busy=false, hist=[];
+let ms=null,live=false,ivS=30,cd=0,cdT=null,busy=false,hist=[];
+const vid=document.getElementById('vid'),cnv=document.getElementById('cnv'),cx=cnv.getContext('2d'),
+  chat=document.getElementById('chat'),sd=document.getElementById('sd'),st=document.getElementById('st'),
+  aov=document.getElementById('aov'),tb=document.getElementById('tbadge'),ph=document.getElementById('ph'),
+  blv=document.getElementById('blv'),bsn=document.getElementById('bsn'),bsh=document.getElementById('bsh');
 
-const vid=document.getElementById('vid'),
-      cnv=document.getElementById('cnv'),
-      cx=cnv.getContext('2d'),
-      chat=document.getElementById('chat'),
-      sd=document.getElementById('sd'),
-      st=document.getElementById('st'),
-      aov=document.getElementById('aov'),
-      tb=document.getElementById('tbadge'),
-      ph=document.getElementById('ph'),
-      blv=document.getElementById('blv'),
-      bsn=document.getElementById('bsn'),
-      bsh=document.getElementById('bsh');
+const PROMPT=`Analise o gráfico na tela agora. Responda EXATAMENTE neste formato:
 
-async function startShare() {
-  try {
-    if (ms) ms.getTracks().forEach(t => t.stop());
-    ms = await navigator.mediaDevices.getDisplayMedia({ video:{ frameRate:5 }, audio:false });
-    vid.srcObject = ms;
-    vid.style.display = 'block';
-    ph.style.display = 'none';
-    setSt('live','CONECTADO');
-    blv.disabled = false;
-    bsn.disabled = false;
-    bsh.textContent = '🔄 TROCAR';
+SINAL: [🟢 COMPRA / 🔴 VENDA / 🟡 NEUTRO]
+
+MOTIVO: [1-2 frases diretas]
+
+DETALHES:
+- Tendência: [alta/baixa/lateral]
+- Suporte: [nível]
+- Resistência: [nível]
+- Indicadores: [resumo]
+
+⚠️ Análise educacional.`;
+
+async function startShare(){
+  try{
+    if(ms)ms.getTracks().forEach(t=>t.stop());
+    ms=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:5},audio:false});
+    vid.srcObject=ms;vid.style.display='block';ph.style.display='none';
+    setSt('live','CONECTADO');blv.disabled=false;bsn.disabled=false;bsh.textContent='🔄 TROCAR';
     toast('✅ Tela conectada!');
-    addMsg('ms','📲 Tela conectada! Use AO VIVO para análise contínua.');
-    ms.getVideoTracks()[0].onended = () => {
-      stopLive();
-      setSt('','OFFLINE');
-      blv.disabled = true;
-      bsn.disabled = true;
-      vid.style.display = 'none';
-      ph.style.display = 'flex';
-      bsh.textContent = '📲 COMPARTILHAR TELA';
-      addMsg('ms','⚠️ Compartilhamento encerrado.');
-    };
-  } catch(e) {
-    if (e.name !== 'AbortError') {
-      toast('❌ Erro ao compartilhar');
-      addMsg('ms','❌ Não foi possível acessar a tela.');
-    }
-  }
+    addMsg('ms','📲 Tela conectada! Clique em AO VIVO para análise automática a cada 30s.');
+    ms.getVideoTracks()[0].onended=()=>{stopLive();setSt('','OFFLINE');blv.disabled=true;bsn.disabled=true;vid.style.display='none';ph.style.display='flex';bsh.textContent='📲 COMPARTILHAR TELA';addMsg('ms','⚠️ Compartilhamento encerrado.');};
+  }catch(e){if(e.name!=='AbortError'){toast('❌ Erro ao compartilhar');addMsg('ms','❌ Use Chrome no PC para compartilhar a tela.');}}
 }
 
-function frame() {
-  if (!ms || !vid.videoWidth) return null;
-  cnv.width = vid.videoWidth;
-  cnv.height = vid.videoHeight;
-  cx.drawImage(vid, 0, 0);
-  const mw = 640;
-  if (cnv.width > mw) {
-    const r = mw/cnv.width, t = document.createElement('canvas');
-    t.width = mw;
-    t.height = Math.round(cnv.height * r);
-    t.getContext('2d').drawImage(cnv, 0, 0, t.width, t.height);
-    return t.toDataURL('image/jpeg', .82).split(',')[1];
-  }
-  return cnv.toDataURL('image/jpeg', .82).split(',')[1];
+function frame(){
+  if(!ms||!vid.videoWidth)return null;
+  cnv.width=vid.videoWidth;cnv.height=vid.videoHeight;cx.drawImage(vid,0,0);
+  const mw=1280;
+  if(cnv.width>mw){const r=mw/cnv.width,t=document.createElement('canvas');t.width=mw;t.height=Math.round(cnv.height*r);t.getContext('2d').drawImage(cnv,0,0,t.width,t.height);return t.toDataURL('image/jpeg',.88).split(',')[1];}
+  return cnv.toDataURL('image/jpeg',.88).split(',')[1];
 }
 
-async function analyze(txt) {
-  if (busy) return;
-  busy = true;
-  const f = frame();
-  if (!f) { addMsg('ms','⚠️ Sem imagem. Compartilhe a tela primeiro.'); busy=false; return; }
-  aov.classList.add('on');
-  setSt('scan','ANALISANDO');
-  const msgs = [...hist.slice(-6), {
-    role:'user',
-    content:[
-      { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:f } },
-      { type:'text', text:txt }
-    ]
-  }];
-  try {
-    const res = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ messages:msgs })
-    });
-    const d = await res.json();
-    if (d.content && d.content[0]) {
-      const rep = d.content[0].text;
-      hist.push({ role:'user', content:txt });
-      hist.push({ role:'assistant', content:rep });
-      if (hist.length > 16) hist = hist.slice(-16);
-      addMsg('ma', rep);
-    } else {
-      addMsg('ms','❌ ' + (d.error?.message || 'Erro na resposta'));
-    }
-  } catch(e) {
-    addMsg('ms','❌ ' + e.message);
-  }
-  aov.classList.remove('on');
-  setSt('live', ms ? 'CONECTADO' : 'OFFLINE');
-  busy = false;
+async function analyze(txt){
+  if(busy)return;busy=true;
+  const f=frame();
+  if(!f){addMsg('ms','⚠️ Sem imagem. Compartilhe a tela primeiro.');busy=false;return;}
+  aov.classList.add('on');setSt('scan','ANALISANDO');
+  const msgs=[...hist.slice(-6),{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:f}},{type:'text',text:txt}]}];
+  try{
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})});
+    const d=await res.json();
+    if(d.content&&d.content[0]){
+      const rep=d.content[0].text;
+      hist.push({role:'user',content:txt});hist.push({role:'assistant',content:rep});
+      if(hist.length>16)hist=hist.slice(-16);
+      addMsg('ma',rep);updateSignal(rep);
+    }else addMsg('ms','❌ '+(d.error?.message||'Erro'));
+  }catch(e){addMsg('ms','❌ '+e.message);}
+  aov.classList.remove('on');setSt('live',ms?'CONECTADO':'OFFLINE');busy=false;
 }
 
-function toggleLive() { live ? stopLive() : startLive(); }
+function updateSignal(text){
+  const u=text.toUpperCase(),card=document.getElementById('scard'),
+    ico=document.getElementById('sico'),act=document.getElementById('sact'),
+    reason=document.getElementById('sreason'),tm=document.getElementById('stime');
+  document.getElementById('sbar').classList.add('show');
+  let tipo='neutral',label='🟡 NEUTRO',emoji='⏸️';
+  if(u.includes('🟢')||u.includes('COMPRA')||u.includes('BUY')){tipo='buy';label='🟢 COMPRAR';emoji='🚀';}
+  else if(u.includes('🔴')||u.includes('VENDA')||u.includes('SELL')){tipo='sell';label='🔴 VENDER';emoji='🔻';}
+  card.className='scard '+tipo;ico.textContent=emoji;act.textContent=label;
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>15&&!l.startsWith('SINAL')&&!l.startsWith('⚠️'));
+  reason.textContent=(lines[0]||'').substring(0,130);
+  tm.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
 
-function startLive() {
+function toggleLive(){live?stopLive():startLive();}
+function startLive(){
   document.getElementById('ibar').classList.add('on');
-  blv.textContent = '⏹ PARAR';
-  blv.classList.add('on');
-  live = true;
-  addMsg('ms','⏱ Monitoramento ao vivo — a cada ' + ivS + 's');
-  addMsg('mu','🔴 Iniciando análise...');
-  analyze('Análise automática: descreva o ativo, tendência, indicadores visíveis e dê seu sinal de trading.');
-  startCd();
+  blv.textContent='⏹ PARAR';blv.classList.add('on');live=true;
+  addMsg('ms','⏱ Ao vivo ativado — análise a cada '+ivS+'s');
+  analyze(PROMPT);startCd();
 }
-
-function stopLive() {
-  if (cdT) { clearInterval(cdT); cdT=null; }
+function stopLive(){
+  if(cdT){clearInterval(cdT);cdT=null;}
   document.getElementById('ibar').classList.remove('on');
-  blv.textContent = '▶ AO VIVO';
-  blv.classList.remove('on');
-  live = false;
-  tb.style.display = 'none';
+  blv.textContent='▶ AO VIVO';blv.classList.remove('on');live=false;tb.style.display='none';
   addMsg('ms','⏹ Monitoramento pausado.');
 }
-
-function startCd() {
-  cd = ivS;
-  tb.style.display = 'block';
-  tb.textContent = cd + 's';
-  if (cdT) clearInterval(cdT);
-  cdT = setInterval(() => {
-    cd--;
-    tb.textContent = cd + 's';
-    if (cd <= 0) {
-      clearInterval(cdT);
-      if (!busy) analyze('Atualização ao vivo: o que mudou? Há novo sinal?');
-      setTimeout(startCd, 400);
-    }
-  }, 1000);
+function startCd(){
+  cd=ivS;tb.style.display='block';tb.textContent=cd+'s';
+  if(cdT)clearInterval(cdT);
+  cdT=setInterval(()=>{cd--;tb.textContent=cd+'s';if(cd<=0){clearInterval(cdT);if(!busy)analyze(PROMPT);setTimeout(startCd,400);}},1000);
 }
-
-function setIv(el) {
-  document.querySelectorAll('.iopt').forEach(e => e.classList.remove('on'));
-  el.classList.add('on');
-  ivS = +el.dataset.s;
-  if (live) { stopLive(); setTimeout(startLive, 300); }
+function setIv(el){document.querySelectorAll('.iopt').forEach(e=>e.classList.remove('on'));el.classList.add('on');ivS=+el.dataset.s;if(live){stopLive();setTimeout(startLive,300);}}
+function doSnap(){addMsg('mu','📸 Analisando...');analyze(PROMPT);}
+function qa(t){if(!ms){toast('⚠️ Compartilhe a tela primeiro!');return;}addMsg('mu',t);analyze(t);}
+function send(){const i=document.getElementById('mi'),t=i.value.trim();if(!t)return;i.value='';addMsg('mu',t);ms?analyze(t):analyzeText(t);}
+async function analyzeText(t){
+  const msgs=[...hist.slice(-6),{role:'user',content:t}];
+  try{const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})});const d=await res.json();if(d.content?.[0]){hist.push({role:'user',content:t});hist.push({role:'assistant',content:d.content[0].text});addMsg('ma',d.content[0].text);}}catch(e){addMsg('ms','❌ '+e.message);}
 }
-
-function doSnap() {
-  addMsg('mu','📸 Analisando snapshot...');
-  analyze('Análise técnica completa: ativo, tendência, suportes, resistências, indicadores, padrões e sinal.');
+document.getElementById('mi').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+function addMsg(cls,txt){
+  const t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),d=document.createElement('div');
+  d.className='msg '+cls;
+  if(cls==='ma')d.innerHTML='<div class="mb">'+txt+'</div><div class="mt">'+t+' · IA</div>';
+  else if(cls==='mu')d.innerHTML='<div class="mb">'+txt+'</div><div class="mt">'+t+'</div>';
+  else d.innerHTML='<div class="mb">'+txt+'</div>';
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
 }
-
-function qa(t) {
-  if (!ms) { toast('⚠️ Compartilhe a tela primeiro!'); return; }
-  addMsg('mu', t);
-  analyze(t);
-}
-
-function send() {
-  const i = document.getElementById('mi'), t = i.value.trim();
-  if (!t) return;
-  i.value = '';
-  addMsg('mu', t);
-  ms ? analyze(t) : analyzeText(t);
-}
-
-async function analyzeText(t) {
-  const msgs = [...hist.slice(-6), { role:'user', content:t }];
-  try {
-    const res = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ messages:msgs })
-    });
-    const d = await res.json();
-    if (d.content?.[0]) {
-      hist.push({ role:'user', content:t });
-      hist.push({ role:'assistant', content:d.content[0].text });
-      addMsg('ma', d.content[0].text);
-    }
-  } catch(e) { addMsg('ms','❌ ' + e.message); }
-}
-
-document.getElementById('mi').addEventListener('keydown', e => { if (e.key==='Enter') send(); });
-
-function addMsg(cls, txt) {
-  const t = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-        d = document.createElement('div');
-  d.className = 'msg ' + cls;
-  if (cls==='ma') d.innerHTML = '<div class="mb">'+txt+'</div><div class="mt">'+t+' · IA</div>';
-  else if (cls==='mu') d.innerHTML = '<div class="mb">'+txt+'</div><div class="mt">'+t+'</div>';
-  else d.innerHTML = '<div class="mb">'+txt+'</div>';
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function setSt(c, l) { sd.className = 'sdot ' + c; st.textContent = l; }
-
-function toast(m) {
-  const el = document.getElementById('toast');
-  el.textContent = m;
-  el.classList.add('on');
-  setTimeout(() => el.classList.remove('on'), 2500);
-}
-
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+function setSt(c,l){sd.className='sdot '+c;st.textContent=l;}
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2500);}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
