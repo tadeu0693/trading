@@ -82,6 +82,28 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .tfopt.on{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 0 10px rgba(0,87,255,.4);}
 .tf-info{font-family:'Space Mono',monospace;font-size:9px;background:rgba(0,87,255,.12);border:1px solid rgba(0,87,255,.25);border-radius:8px;padding:3px 10px;color:#6699ff;margin-left:auto;flex-shrink:0;}
 
+/* ATIVO */
+#abar{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+#abar span{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);flex-shrink:0;letter-spacing:.08em;}
+#ativo-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:6px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;outline:none;text-transform:uppercase;letter-spacing:.1em;transition:border-color .2s;max-width:140px;}
+#ativo-input:focus{border-color:var(--accent);}
+#ativo-input::placeholder{color:var(--text2);font-weight:400;text-transform:none;}
+.ativo-presets{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;}
+.ativo-presets::-webkit-scrollbar{display:none;}
+.apre{flex-shrink:0;padding:5px 11px;border-radius:14px;border:1px solid var(--border);background:var(--bg3);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+.apre:hover,.apre:active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+.apre.on{background:rgba(0,229,160,.15);border-color:var(--accent);color:var(--accent);}
+#reset-btn{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:5px 10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;}
+#reset-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* CONTADOR VISUAL no signal card */
+.scount{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);margin-top:4px;}
+.scount .bar{display:flex;gap:3px;margin-top:4px;}
+.scount .dot{width:10px;height:10px;border-radius:50%;background:var(--border);}
+.scount .dot.buy{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+.scount .dot.sell{background:var(--red);box-shadow:0 0 6px var(--red);}
+.scount .dot.neutral{background:var(--yellow);}
+
 /* QUICK */
 #qa{display:flex;gap:6px;padding:6px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border);}
 #qa::-webkit-scrollbar{display:none;}
@@ -129,6 +151,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
       <div class="sinf">
         <div class="sact" id="sact">AGUARDANDO</div>
         <div class="sreason" id="sreason">Inicie o monitoramento ao vivo...</div>
+        <div class="scount"><span id="scount-label"></span><div class="bar" id="scount-bar"></div></div>
       </div>
       <div class="stime" id="stime">--:--:--</div>
     </div>
@@ -190,7 +213,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 <div id="toast"></div>
 
 <script>
-let ms=null,live=false,ivS=30,cd=0,cdT=null,busy=false,hist=[],currentTf='M5';
+let ms=null,live=false,ivS=30,cd=0,cdT=null,busy=false,hist=[],currentTf='M5',currentAtivo='',lastSignal=null,lastSignalCount=0,signalHistory=[];
 const vid=document.getElementById('vid'),cnv=document.getElementById('cnv'),cx=cnv.getContext('2d'),
   chat=document.getElementById('chat'),sd=document.getElementById('sd'),st=document.getElementById('st'),
   aov=document.getElementById('aov'),tb=document.getElementById('tbadge'),ph=document.getElementById('ph'),
@@ -205,15 +228,13 @@ const TF_CONFIG = {
   'H4':  { label:'SWING · H4',     dur:'1-3 dias'    },
 };
 
-// Guarda último sinal para evitar flip-flop
-let lastSignal = null;
-let lastSignalCount = 0;
 
 function getPrompt() {
   const cfg = TF_CONFIG[currentTf];
   const ctx = lastSignal ? `\n⚠️ CONTEXTO: O último sinal foi ${lastSignal} (confirmado ${lastSignalCount}x). SÓ mude se houver evidência FORTE de reversão.` : '';
 
-  return `Você é um trader profissional de Forex analisando price action puro (sem indicadores) no timeframe ${currentTf}.${ctx}
+  const ativoStr = currentAtivo ? `no par ${currentAtivo}` : 'no par visível na tela';
+  return `Você é um trader profissional de Forex analisando price action puro (sem indicadores) ${ativoStr} no timeframe ${currentTf}.${ctx}
 
 REGRAS OBRIGATÓRIAS:
 1. Analise a ESTRUTURA completa do gráfico — não apenas os últimos candles
@@ -252,6 +273,51 @@ ALVO: [alvo realista baseado na estrutura]
 VALIDADE: [${cfg.dur}]
 
 ⚠️ Análise educacional — não é recomendação de investimento.`;
+}
+
+function setAtivo(el) {
+  document.querySelectorAll('.apre').forEach(e => e.classList.remove('on'));
+  el.classList.add('on');
+  const novo = el.dataset.a;
+  document.getElementById('ativo-input').value = novo;
+  if(novo !== currentAtivo) {
+    currentAtivo = novo;
+    resetContador();
+    addMsg('ms', '📊 Ativo alterado para ' + currentAtivo + ' — contador zerado!');
+  }
+}
+
+function onAtivoType() {
+  const val = document.getElementById('ativo-input').value.toUpperCase();
+  document.getElementById('ativo-input').value = val;
+  document.querySelectorAll('.apre').forEach(e => {
+    e.classList.toggle('on', e.dataset.a === val);
+  });
+}
+
+function onAtivoChange() {
+  const novo = document.getElementById('ativo-input').value.trim().toUpperCase();
+  if(novo && novo !== currentAtivo) {
+    currentAtivo = novo;
+    resetContador();
+    addMsg('ms', '📊 Ativo: ' + currentAtivo + ' — contador zerado!');
+  }
+}
+
+function resetAtivo() {
+  resetContador();
+  addMsg('ms', '🔄 Contador zerado! Iniciando nova contagem para ' + (currentAtivo || 'o ativo atual'));
+}
+
+function resetContador() {
+  lastSignal = null;
+  lastSignalCount = 0;
+  signalHistory = [];
+  // Limpa card de sinal
+  document.getElementById('sbar').classList.remove('show');
+  document.getElementById('scount-label').textContent = '';
+  document.getElementById('scount-bar').innerHTML = '';
+  hist = []; // limpa histórico de conversa também
 }
 
 function setTf(el) {
@@ -313,7 +379,10 @@ function updateSignal(text){
   if(u.includes('🟢')||(/SINAL:.*COMPRA/.test(u))){tipo='buy';label='🟢 COMPRAR';emoji='🚀';newSig='COMPRA';}
   else if(u.includes('🔴')||(/SINAL:.*VENDA/.test(u))){tipo='sell';label='🔴 VENDER';emoji='🔻';newSig='VENDA';}
 
-  // Rastreia consistência do sinal
+  // Rastreia histórico de sinais
+  signalHistory.push(newSig);
+  if(signalHistory.length > 10) signalHistory = signalHistory.slice(-10);
+
   if(newSig === lastSignal) {
     lastSignalCount++;
   } else {
@@ -321,15 +390,30 @@ function updateSignal(text){
     lastSignalCount = 1;
   }
 
-  // Mostra badge de confiança
+  // Badge de confiança
   let confBadge = '';
   if(u.includes('CONFIANÇA: ALTA')||u.includes('ALTA ✅')) confBadge = ' ✅';
   else if(u.includes('CONFIANÇA: MÉDIA')||u.includes('MÉDIA ⚠️')) confBadge = ' ⚠️';
   else if(u.includes('CONFIANÇA: BAIXA')||u.includes('BAIXA ❌')) confBadge = ' ❌';
 
+  const ativoLabel = currentAtivo ? ' · '+currentAtivo : '';
   card.className='scard '+tipo;
   ico.textContent=emoji;
-  act.textContent=label+confBadge+(lastSignalCount>1?' (×'+lastSignalCount+')':'');
+  act.textContent=label+confBadge+ativoLabel;
+
+  // Contador visual com bolinhas
+  const countLabel = document.getElementById('scount-label');
+  const countBar = document.getElementById('scount-bar');
+  if(lastSignalCount > 0 && newSig !== 'NEUTRO') {
+    countLabel.textContent = 'Confirmado ' + lastSignalCount + 'x seguido' + (lastSignalCount >= 3 ? ' 🔥' : '');
+    countBar.innerHTML = signalHistory.slice(-8).map(s => {
+      const cls = s==='COMPRA'?'buy':s==='VENDA'?'sell':'neutral';
+      return '<div class="dot '+cls+'"></div>';
+    }).join('');
+  } else {
+    countLabel.textContent = '';
+    countBar.innerHTML = '';
+  }
 
   // Extrai confluências como motivo
   const confMatch = text.match(/CONFLUÊNCIAS:([\s\S]*?)(?=ESTRUTURA|ENTRADA|$)/i);
